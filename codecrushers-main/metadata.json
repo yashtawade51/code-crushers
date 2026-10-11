@@ -1,0 +1,6 @@
+{
+  "name": "RozgarLink — AI-Powered Skills-to-Opportunity Matching Engine",
+  "description": "Smart career and opportunity matching engine for students and job seekers discovering internships, jobs, and training programs.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
