@@ -20,7 +20,13 @@ export interface EducationInfo {
   cgpa: string;
 }
 
-export type DocumentType = 'Resume / CV' | 'College ID' | 'Degree Certificate' | 'Marksheet / Transcript' | 'Government ID';
+export type DocumentType =
+  | 'Resume / CV'
+  | 'College ID'
+  | 'Degree Certificate'
+  | 'Marksheet / Transcript'
+  | 'Government ID'
+  | 'Language Certificate / Skill Certificate';
 export type DocVerificationStatus = 'Pending' | 'Verified' | 'Rejected';
 
 export interface VerificationDocument {
@@ -33,6 +39,7 @@ export interface VerificationDocument {
   verificationScore?: number;
   notes?: string;
   fileUrl?: string;
+  skillName?: string; // Optional: associated technical language/skill
 }
 
 export interface StudentProfile {
@@ -44,6 +51,8 @@ export interface StudentProfile {
   headline: string;
   education: EducationInfo;
   technicalSkills: string[];
+  skillCertificates?: Record<string, { docName: string; verified: boolean; uploadedAt: string }>;
+  marksheetDoc?: { docName: string; verified: boolean; uploadedAt: string };
   softSkills: string[];
   experienceLevel: 'Pre-final Year' | 'Final Year Student' | 'Fresh Graduate' | '1-2 Years Experience';
   projects: Project[];

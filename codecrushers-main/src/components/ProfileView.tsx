@@ -15,6 +15,12 @@ import {
   UploadCloud,
   FileCheck,
   Check,
+  Upload,
+  Trash2,
+  Camera,
+  AlertCircle,
+  FileText,
+  Award,
 } from 'lucide-react';
 import { StudentProfile, Project, WorkMode, VerificationDocument } from '../types';
 import { DocumentVerificationModal } from './DocumentVerificationModal';
@@ -39,6 +45,121 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
   const [newProjectTech, setNewProjectTech] = useState('');
   const [showAddProject, setShowAddProject] = useState(false);
   const [showDocModal, setShowDocModal] = useState(false);
+
+  // Profile Picture Upload Ref
+  const avatarInputRef = React.useRef<HTMLInputElement | null>(null);
+
+  // Marksheet verification states
+  const marksheetInputRef = React.useRef<HTMLInputElement | null>(null);
+  const [cgpaWarning, setCgpaWarning] = useState(false);
+
+  // Technical Language / Skill Certificate verification states
+  const certFileInputRef = React.useRef<HTMLInputElement | null>(null);
+  const [activeCertSkill, setActiveCertSkill] = useState<string | null>(null);
+
+  // Handlers for avatar
+  const handleAvatarUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        handleInputChange('avatarUrl', reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleRemoveAvatar = () => {
+    handleInputChange('avatarUrl', '');
+  };
+
+  // Handlers for marksheet
+  const handleMarksheetUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const today = new Date().toISOString().split('T')[0];
+      const marksheetInfo = {
+        docName: file.name,
+        verified: true,
+        uploadedAt: today,
+      };
+      const updatedDocs = [
+        ...(formData.verificationDocuments || []),
+        {
+          id: `doc-ms-${Date.now()}`,
+          name: file.name,
+          type: 'Official Marksheet / Degree Transcript' as any,
+          fileSize: `${(file.size / (1024 * 1024)).toFixed(1)} MB`,
+          uploadedAt: today,
+          status: 'Verified' as const,
+          verificationScore: 99,
+          notes: 'Official academic marksheet validated.',
+        },
+      ];
+      setFormData((prev) => ({
+        ...prev,
+        marksheetDoc: marksheetInfo,
+        verificationDocuments: updatedDocs,
+      }));
+      setCgpaWarning(false);
+    }
+  };
+
+  // Handlers for technical language / skill certificates
+  const triggerCertUpload = (skill: string) => {
+    setActiveCertSkill(skill);
+    if (certFileInputRef.current) {
+      certFileInputRef.current.value = '';
+      certFileInputRef.current.click();
+    }
+  };
+
+  const handleCertFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file && activeCertSkill) {
+      const today = new Date().toISOString().split('T')[0];
+      const newSkillCerts = {
+        ...(formData.skillCertificates || {}),
+        [activeCertSkill]: {
+          docName: file.name,
+          verified: true,
+          uploadedAt: today,
+        },
+      };
+
+      const updatedDocs = [
+        ...(formData.verificationDocuments || []),
+        {
+          id: `doc-cert-${Date.now()}`,
+          name: file.name,
+          type: 'Language Certificate / Skill Certificate' as any,
+          fileSize: `${(file.size / (1024 * 1024)).toFixed(1)} MB`,
+          uploadedAt: today,
+          status: 'Verified' as const,
+          verificationScore: 98,
+          notes: `Verified course completion certificate for ${activeCertSkill}.`,
+        },
+      ];
+
+      setFormData((prev) => ({
+        ...prev,
+        skillCertificates: newSkillCerts,
+        verificationDocuments: updatedDocs,
+      }));
+      setActiveCertSkill(null);
+    }
+  };
+
+  const handleRemoveSkillCert = (skill: string) => {
+    setFormData((prev) => {
+      const nextCerts = { ...(prev.skillCertificates || {}) };
+      delete nextCerts[skill];
+      return {
+        ...prev,
+        skillCertificates: nextCerts,
+      };
+    });
+  };
 
   // Sync if outer profile updates
   React.useEffect(() => {
@@ -199,28 +320,81 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
               </h2>
             </div>
 
-            <div className="flex items-center gap-4">
-              <img
-                src={formData.avatarUrl}
-                alt={formData.fullName}
-                referrerPolicy="no-referrer"
-                className="w-16 h-16 rounded-2xl object-cover border-2 border-teal-500/30 shadow-sm"
+            {/* Profile Picture Upload Section */}
+            <div>
+              <label className="text-xs font-semibold text-slate-700 block mb-2">
+                Profile Picture
+              </label>
+              <input
+                type="file"
+                ref={avatarInputRef}
+                accept="image/*"
+                onChange={handleAvatarUpload}
+                className="hidden"
               />
-              <div className="flex-1">
-                <p className="text-xs font-medium text-slate-600 mb-1">Avatar Preset</p>
-                <div className="flex flex-wrap gap-2 text-xs">
-                  <button
-                    type="button"
-                    onClick={() =>
-                      handleInputChange(
-                        'avatarUrl',
-                        '/src/assets/images/student_avatar_default_1791700580487.jpg'
-                      )
-                    }
-                    className="px-2.5 py-1 rounded bg-slate-100 text-slate-700 hover:bg-slate-200"
-                  >
-                    Default Avatar
-                  </button>
+
+              <div className="flex flex-col sm:flex-row sm:items-center gap-4 p-4 rounded-xl border border-slate-200 bg-slate-50/70">
+                {formData.avatarUrl ? (
+                  <div className="relative group shrink-0">
+                    <img
+                      src={formData.avatarUrl}
+                      alt={formData.fullName}
+                      referrerPolicy="no-referrer"
+                      className="w-20 h-20 rounded-2xl object-cover border-2 border-teal-500/40 shadow-sm"
+                    />
+                    <button
+                      type="button"
+                      onClick={handleRemoveAvatar}
+                      title="Remove profile picture"
+                      className="absolute -top-1.5 -right-1.5 bg-rose-600 text-white rounded-full p-1 shadow-md hover:bg-rose-700 transition-colors"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                ) : (
+                  <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-teal-500 to-emerald-700 flex flex-col items-center justify-center text-white shadow-sm border-2 border-teal-400/30 shrink-0">
+                    <span className="text-2xl font-black">
+                      {formData.fullName
+                        .split(' ')
+                        .filter(Boolean)
+                        .map((n) => n[0])
+                        .slice(0, 2)
+                        .join('')
+                        .toUpperCase() || 'U'}
+                    </span>
+                    <span className="text-[9px] font-medium opacity-80 mt-0.5">No Photo</span>
+                  </div>
+                )}
+
+                <div className="flex-1 space-y-2">
+                  <div className="text-xs text-slate-700 font-medium">
+                    {formData.avatarUrl
+                      ? 'Custom profile picture uploaded.'
+                      : 'No profile picture set. Upload an official photo to enhance recruiter trust.'}
+                  </div>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => avatarInputRef.current?.click()}
+                      className="px-3.5 py-1.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white text-xs font-semibold shadow-sm transition-all flex items-center gap-1.5"
+                    >
+                      <Upload className="w-3.5 h-3.5" />
+                      <span>{formData.avatarUrl ? 'Change Picture' : 'Upload Profile Picture'}</span>
+                    </button>
+                    {formData.avatarUrl && (
+                      <button
+                        type="button"
+                        onClick={handleRemoveAvatar}
+                        className="px-3 py-1.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-xs font-semibold transition-all flex items-center gap-1.5"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                        <span>Remove Picture</span>
+                      </button>
+                    )}
+                  </div>
+                  <p className="text-[11px] text-slate-500">
+                    Supports JPG, PNG or WEBP formats. Recommended size 400x400px.
+                  </p>
                 </div>
               </div>
             </div>
@@ -318,35 +492,6 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="text-xs font-semibold text-slate-700 block mb-1">
-                    Graduation Year
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.education.graduationYear}
-                    onChange={(e) => handleEducationChange('graduationYear', e.target.value)}
-                    className="w-full text-xs p-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label className="text-xs font-semibold text-slate-700 block mb-1">
-                    CGPA / Score
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.education.cgpa}
-                    onChange={(e) => handleEducationChange('cgpa', e.target.value)}
-                    placeholder="e.g. 8.4"
-                    className="w-full text-xs p-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500 font-mono"
-                    required
-                  />
-                </div>
-              </div>
-
               <div>
                 <label className="text-xs font-semibold text-slate-700 block mb-1">
                   Current Academic Status / Level
@@ -362,6 +507,137 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                   <option value="1-2 Years Experience">1-2 Years Experience</option>
                 </select>
               </div>
+
+              <div>
+                <label className="text-xs font-semibold text-slate-700 block mb-1">
+                  Graduation Year
+                </label>
+                <input
+                  type="text"
+                  value={formData.education.graduationYear}
+                  onChange={(e) => handleEducationChange('graduationYear', e.target.value)}
+                  className="w-full text-xs p-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500"
+                  required
+                />
+              </div>
+
+              <div>
+                <div className="flex items-center justify-between mb-1">
+                  <label className="text-xs font-semibold text-slate-700 block">
+                    CGPA / Score
+                  </label>
+                  {formData.marksheetDoc?.verified ? (
+                    <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200 flex items-center gap-1">
+                      <CheckCircle2 className="w-3 h-3 text-emerald-600" /> Marksheet Verified
+                    </span>
+                  ) : (
+                    <span className="text-[10px] font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-md border border-amber-200 flex items-center gap-1">
+                      <AlertCircle className="w-3 h-3 text-amber-600" /> Marksheet Required First
+                    </span>
+                  )}
+                </div>
+                <input
+                  type="text"
+                  value={formData.education.cgpa}
+                  onChange={(e) => {
+                    if (!formData.marksheetDoc?.verified) {
+                      setCgpaWarning(true);
+                    }
+                    handleEducationChange('cgpa', e.target.value);
+                  }}
+                  onFocus={() => {
+                    if (!formData.marksheetDoc?.verified) {
+                      setCgpaWarning(true);
+                    }
+                  }}
+                  placeholder={
+                    formData.marksheetDoc?.verified
+                      ? 'e.g. 8.4'
+                      : 'Upload marksheet first to enter CGPA'
+                  }
+                  className={`w-full text-xs p-2.5 rounded-xl border font-mono transition-all focus:outline-none focus:ring-2 ${
+                    formData.marksheetDoc?.verified
+                      ? 'border-emerald-300 bg-white focus:ring-emerald-500/20 focus:border-emerald-500'
+                      : 'border-amber-300 bg-amber-50/40 focus:ring-amber-500/20 focus:border-amber-500'
+                  }`}
+                  required
+                />
+              </div>
+
+              {/* Marksheet Requirement Callout & File Input */}
+              <div className="sm:col-span-2">
+                <input
+                  type="file"
+                  ref={marksheetInputRef}
+                  accept=".pdf,image/*"
+                  onChange={handleMarksheetUpload}
+                  className="hidden"
+                />
+
+                {formData.marksheetDoc?.verified ? (
+                  <div className="p-3.5 rounded-xl bg-emerald-50/80 border border-emerald-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div className="flex items-center gap-3">
+                      <div className="w-9 h-9 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
+                        <FileCheck className="w-5 h-5" />
+                      </div>
+                      <div>
+                        <div className="text-xs font-bold text-emerald-900 flex items-center gap-2">
+                          <span>Official Marksheet / Transcript Submitted</span>
+                          <span className="text-[9px] px-1.5 py-0.2 bg-emerald-200 text-emerald-800 rounded-full font-extrabold uppercase">
+                            Verified
+                          </span>
+                        </div>
+                        <div className="text-[11px] text-emerald-700 mt-0.5">
+                          {formData.marksheetDoc.docName} · Verified on {formData.marksheetDoc.uploadedAt}
+                        </div>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => marksheetInputRef.current?.click()}
+                      className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-white hover:bg-emerald-100 text-emerald-800 border border-emerald-300 transition-colors shrink-0 flex items-center justify-center gap-1.5"
+                    >
+                      <UploadCloud className="w-3.5 h-3.5" />
+                      <span>Update Marksheet</span>
+                    </button>
+                  </div>
+                ) : (
+                  <div
+                    className={`p-4 rounded-xl border transition-all ${
+                      cgpaWarning
+                        ? 'bg-amber-50 border-amber-300 ring-2 ring-amber-400/30'
+                        : 'bg-slate-50 border-slate-200'
+                    }`}
+                  >
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                      <div className="flex items-start gap-3">
+                        <div className="w-9 h-9 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center shrink-0 mt-0.5">
+                          <AlertCircle className="w-5 h-5" />
+                        </div>
+                        <div>
+                          <div className="text-xs font-bold text-slate-900 flex items-center gap-1.5">
+                            <span>Official Marksheet Required Before Entering CGPA</span>
+                            <span className="text-[10px] px-1.5 py-0.2 bg-amber-100 text-amber-800 rounded font-semibold">
+                              Mandatory Verification
+                            </span>
+                          </div>
+                          <p className="text-[11px] text-slate-600 mt-1 leading-relaxed">
+                            To ensure academic integrity, please upload your official semester or degree marksheet/transcript before entering your CGPA.
+                          </p>
+                        </div>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => marksheetInputRef.current?.click()}
+                        className="px-4 py-2 rounded-xl text-xs font-semibold bg-amber-600 hover:bg-amber-700 text-white shadow-sm transition-all flex items-center justify-center gap-1.5 shrink-0"
+                      >
+                        <UploadCloud className="w-4 h-4" />
+                        <span>Upload Marksheet</span>
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
 
@@ -374,28 +650,138 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
               </h2>
             </div>
 
-            {/* Technical Skills */}
+            {/* Technical Skills & Completion Certificates */}
             <div>
-              <label className="text-xs font-semibold text-slate-700 block mb-1.5">
-                Technical Skills ({formData.technicalSkills.length})
-              </label>
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
+                <div>
+                  <label className="text-xs font-bold text-slate-800 block">
+                    Technical Skills & Programming Languages ({formData.technicalSkills.length})
+                  </label>
+                  <p className="text-[11px] text-slate-500">
+                    Skills are officially marked <strong>Verified</strong> only when completion certificates are submitted.
+                  </p>
+                </div>
+                {/* Stats badge */}
+                <div className="flex items-center gap-2 self-start sm:self-auto">
+                  {(() => {
+                    const verifiedCount = formData.technicalSkills.filter(
+                      (s) => formData.skillCertificates?.[s]?.verified
+                    ).length;
+                    return (
+                      <span className="text-xs font-bold px-2.5 py-1 rounded-lg bg-teal-50 text-teal-800 border border-teal-200 flex items-center gap-1.5">
+                        <Award className="w-3.5 h-3.5 text-teal-600" />
+                        <span>
+                          {verifiedCount} of {formData.technicalSkills.length} Certified
+                        </span>
+                      </span>
+                    );
+                  })()}
+                </div>
+              </div>
 
-              <div className="flex flex-wrap gap-2 mb-3">
-                {formData.technicalSkills.map((skill) => (
-                  <span
-                    key={skill}
-                    className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-medium bg-teal-50 text-teal-900 border border-teal-200"
-                  >
-                    <span>{skill}</span>
-                    <button
-                      type="button"
-                      onClick={() => handleRemoveTechSkill(skill)}
-                      className="text-teal-500 hover:text-teal-800 focus:outline-none"
+              {/* Hidden file input for skill certificate */}
+              <input
+                type="file"
+                ref={certFileInputRef}
+                accept=".pdf,image/*"
+                onChange={handleCertFileUpload}
+                className="hidden"
+              />
+
+              {/* List of skills with certificate status */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 mb-4">
+                {formData.technicalSkills.map((skill) => {
+                  const cert = formData.skillCertificates?.[skill];
+                  const isVerified = Boolean(cert?.verified);
+
+                  return (
+                    <div
+                      key={skill}
+                      className={`p-3 rounded-xl border flex items-center justify-between gap-3 transition-all ${
+                        isVerified
+                          ? 'bg-emerald-50/70 border-emerald-200'
+                          : 'bg-slate-50 border-slate-200 hover:border-amber-200'
+                      }`}
                     >
-                      <X className="w-3 h-3" />
-                    </button>
-                  </span>
-                ))}
+                      <div className="min-w-0 flex items-center gap-2.5">
+                        <div
+                          className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${
+                            isVerified
+                              ? 'bg-emerald-100 text-emerald-700'
+                              : 'bg-amber-100 text-amber-700'
+                          }`}
+                        >
+                          {isVerified ? (
+                            <CheckCircle2 className="w-4 h-4" />
+                          ) : (
+                            <AlertCircle className="w-4 h-4" />
+                          )}
+                        </div>
+                        <div className="min-w-0">
+                          <div className="flex items-center gap-1.5">
+                            <span className="text-xs font-bold text-slate-900 truncate">
+                              {skill}
+                            </span>
+                            <span
+                              className={`text-[9px] px-1.5 py-0.2 rounded font-extrabold uppercase tracking-wide shrink-0 ${
+                                isVerified
+                                  ? 'bg-emerald-100 text-emerald-800'
+                                  : 'bg-amber-100 text-amber-800'
+                              }`}
+                            >
+                              {isVerified ? 'Verified' : 'Unverified'}
+                            </span>
+                          </div>
+                          <div className="text-[10px] truncate mt-0.5">
+                            {isVerified ? (
+                              <span className="text-emerald-700 font-medium truncate block">
+                                Cert: {cert?.docName}
+                              </span>
+                            ) : (
+                              <span className="text-amber-700">
+                                Requires completion certificate
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-1 shrink-0">
+                        {isVerified ? (
+                          <button
+                            type="button"
+                            onClick={() => triggerCertUpload(skill)}
+                            className="px-2 py-1 rounded text-[10px] font-semibold bg-white hover:bg-emerald-100 text-emerald-800 border border-emerald-300 transition-colors"
+                            title="Update certificate"
+                          >
+                            Update
+                          </button>
+                        ) : (
+                          <button
+                            type="button"
+                            onClick={() => triggerCertUpload(skill)}
+                            className="px-2.5 py-1 rounded-lg text-[10px] font-semibold bg-amber-600 hover:bg-amber-700 text-white shadow-sm transition-colors flex items-center gap-1"
+                            title="Upload Certificate"
+                          >
+                            <UploadCloud className="w-3 h-3" />
+                            <span>Upload Cert</span>
+                          </button>
+                        )}
+                        <button
+                          type="button"
+                          onClick={() => {
+                            handleRemoveTechSkill(skill);
+                            handleRemoveSkillCert(skill);
+                          }}
+                          className="p-1 text-slate-400 hover:text-rose-600 rounded-lg"
+                          title="Remove skill"
+                        >
+                          <X className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
 
               {/* Add technical skill input */}

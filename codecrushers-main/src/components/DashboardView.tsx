@@ -75,12 +75,24 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         {/* 1. WELCOME BANNER & PROFILE SUMMARY */}
         <div className="bg-gradient-to-r from-slate-900 via-slate-800 to-teal-950 rounded-2xl p-6 sm:p-8 text-white shadow-sm flex flex-col lg:flex-row lg:items-center justify-between gap-6">
           <div className="flex items-start sm:items-center gap-4">
-            <img
-              src={profile.avatarUrl}
-              alt={profile.fullName}
-              referrerPolicy="no-referrer"
-              className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl object-cover border-2 border-teal-400/40 shadow-md shrink-0"
-            />
+            {profile.avatarUrl ? (
+              <img
+                src={profile.avatarUrl}
+                alt={profile.fullName}
+                referrerPolicy="no-referrer"
+                className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl object-cover border-2 border-teal-400/40 shadow-md shrink-0"
+              />
+            ) : (
+              <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-gradient-to-br from-teal-500 to-emerald-700 flex items-center justify-center text-white font-extrabold text-xl sm:text-2xl shadow-md border-2 border-teal-400/40 shrink-0">
+                {profile.fullName
+                  .split(' ')
+                  .filter(Boolean)
+                  .map((n) => n[0])
+                  .slice(0, 2)
+                  .join('')
+                  .toUpperCase() || 'U'}
+              </div>
+            )}
             <div className="space-y-1">
               <div className="flex items-center gap-2">
                 <span className="text-xs px-2 py-0.5 rounded-md bg-teal-500/20 text-teal-300 font-semibold border border-teal-500/30">

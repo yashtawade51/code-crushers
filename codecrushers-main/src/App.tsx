@@ -240,8 +240,8 @@ export default function App() {
         user={authUser}
         onLogout={() => {
           setAuthUser(null);
-          setCurrentTab('landing');
-          addToast('info', 'Logged Out', 'Signed out of recruiter portal.');
+          setCurrentTab('login');
+          addToast('info', 'Logged Out', 'Signed out of recruiter portal. Returned to login page.');
         }}
       />
     );
@@ -282,7 +282,8 @@ export default function App() {
         onOpenLogin={handleOpenLogin}
         onLogout={() => {
           setAuthUser(null);
-          addToast('info', 'Signed Out', 'You are now browsing as guest.');
+          setCurrentTab('login');
+          addToast('info', 'Signed Out', 'You have been logged out. Returned to login page.');
         }}
       />
 

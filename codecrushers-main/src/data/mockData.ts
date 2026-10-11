@@ -5,7 +5,7 @@ export const DEFAULT_STUDENT_PROFILE: StudentProfile = {
   fullName: 'Ananya Sharma',
   email: 'ananya.sharma@campus.edu',
   phone: '+91 98765 43210',
-  avatarUrl: '/src/assets/images/student_avatar_default_1791700580487.jpg',
+  avatarUrl: '',
   headline: 'Final Year B.Tech Computer Science | Full-Stack & AI Enthusiast',
   education: {
     degree: 'Bachelor of Technology (B.Tech)',
@@ -13,6 +13,11 @@ export const DEFAULT_STUDENT_PROFILE: StudentProfile = {
     institution: 'National Institute of Technology',
     graduationYear: '2027',
     cgpa: '8.4',
+  },
+  marksheetDoc: {
+    docName: 'NIT_Trichy_Sem6_Marksheet.pdf',
+    verified: true,
+    uploadedAt: '2026-10-05',
   },
   technicalSkills: [
     'React',
@@ -25,6 +30,10 @@ export const DEFAULT_STUDENT_PROFILE: StudentProfile = {
     'Git & GitHub',
     'Tailwind CSS',
   ],
+  skillCertificates: {
+    React: { docName: 'React_Frontend_Meta_Certificate.pdf', verified: true, uploadedAt: '2026-10-06' },
+    TypeScript: { docName: 'TypeScript_Pro_Certificate.pdf', verified: true, uploadedAt: '2026-10-07' },
+  },
   softSkills: [
     'Problem Solving',
     'Team Collaboration',
@@ -81,7 +90,7 @@ export const PRESET_PROFILES: { name: string; tag: string; profile: StudentProfi
       fullName: 'Rohan Deshmukh',
       email: 'rohan.deshmukh@university.edu',
       phone: '+91 98220 11223',
-      avatarUrl: '/src/assets/images/student_avatar_default_1791700580487.jpg',
+      avatarUrl: '',
       headline: 'Pre-final Year Data Science Student | Python & Statistics',
       education: {
         degree: 'Bachelor of Science (B.Sc)',
@@ -90,6 +99,7 @@ export const PRESET_PROFILES: { name: string; tag: string; profile: StudentProfi
         graduationYear: '2028',
         cgpa: '8.8',
       },
+      marksheetDoc: { docName: 'Apex_BSc_DataScience_Marksheet.pdf', verified: true, uploadedAt: '2026-09-12' },
       technicalSkills: [
         'Python',
         'SQL',
@@ -101,6 +111,10 @@ export const PRESET_PROFILES: { name: string; tag: string; profile: StudentProfi
         'Scikit-Learn',
         'Data Visualization',
       ],
+      skillCertificates: {
+        Python: { docName: 'Python_For_DataScience_IBM_Cert.pdf', verified: true, uploadedAt: '2026-08-14' },
+        SQL: { docName: 'Advanced_SQL_Database_Certificate.pdf', verified: true, uploadedAt: '2026-09-02' },
+      },
       softSkills: [
         'Analytical Reasoning',
         'Attention to Detail',
@@ -132,7 +146,7 @@ export const PRESET_PROFILES: { name: string; tag: string; profile: StudentProfi
       fullName: 'Vikram Joshi',
       email: 'vikram.j@techcol.edu',
       phone: '+91 97654 33445',
-      avatarUrl: '/src/assets/images/student_avatar_default_1791700580487.jpg',
+      avatarUrl: '',
       headline: 'Fresh Graduate B.Tech IT | Linux, Docker & Cloud Architecture',
       education: {
         degree: 'Bachelor of Technology (B.Tech)',
@@ -141,6 +155,7 @@ export const PRESET_PROFILES: { name: string; tag: string; profile: StudentProfi
         graduationYear: '2026',
         cgpa: '7.6',
       },
+      marksheetDoc: { docName: 'StateEng_BTech_IT_Final_Marksheet.pdf', verified: true, uploadedAt: '2026-07-28' },
       technicalSkills: [
         'Linux',
         'Docker',
@@ -152,6 +167,10 @@ export const PRESET_PROFILES: { name: string; tag: string; profile: StudentProfi
         'Kubernetes Basics',
         'Networking',
       ],
+      skillCertificates: {
+        Linux: { docName: 'RedHat_Certified_System_Admin.pdf', verified: true, uploadedAt: '2026-06-15' },
+        Docker: { docName: 'Docker_Fundamentals_DockerInc_Cert.pdf', verified: true, uploadedAt: '2026-08-10' },
+      },
       softSkills: [
         'Root Cause Analysis',
         'High Ownership',
