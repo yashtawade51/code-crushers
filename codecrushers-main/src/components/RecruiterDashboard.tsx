@@ -76,18 +76,18 @@ const INITIAL_APPLICATIONS: CandidateApplication[] = [
 ];
 
 const STATUS_CONFIG: Record<AppStatus, { label: string; color: string; bg: string; icon: React.ElementType }> = {
-  Pending:     { label: 'Pending Review', color: 'text-amber-400',  bg: 'bg-amber-500/15 border-amber-500/30',  icon: Clock },
-  Shortlisted: { label: 'Shortlisted',    color: 'text-teal-400',   bg: 'bg-teal-500/15 border-teal-500/30',    icon: Star },
-  Interview:   { label: 'Interview',      color: 'text-blue-400',   bg: 'bg-blue-500/15 border-blue-500/30',    icon: Calendar },
-  Rejected:    { label: 'Rejected',       color: 'text-red-400',    bg: 'bg-red-500/15 border-red-500/30',      icon: XCircle },
-  Hired:       { label: 'Hired',          color: 'text-emerald-400',bg: 'bg-emerald-500/15 border-emerald-500/30', icon: CheckCircle },
+  Pending:     { label: 'Pending Review', color: 'text-amber-800',  bg: 'bg-amber-50 border-amber-200',  icon: Clock },
+  Shortlisted: { label: 'Shortlisted',    color: 'text-teal-800',   bg: 'bg-teal-50 border-teal-200',    icon: Star },
+  Interview:   { label: 'Interview',      color: 'text-blue-800',   bg: 'bg-blue-50 border-blue-200',    icon: Calendar },
+  Rejected:    { label: 'Rejected',       color: 'text-rose-800',   bg: 'bg-rose-50 border-rose-200',    icon: XCircle },
+  Hired:       { label: 'Hired',          color: 'text-emerald-800',bg: 'bg-emerald-50 border-emerald-200', icon: CheckCircle },
 };
 
 function getScoreColor(score: number) {
-  if (score >= 90) return 'text-emerald-400';
-  if (score >= 80) return 'text-teal-400';
-  if (score >= 70) return 'text-amber-400';
-  return 'text-red-400';
+  if (score >= 90) return 'text-emerald-600';
+  if (score >= 80) return 'text-teal-600';
+  if (score >= 70) return 'text-amber-600';
+  return 'text-rose-600';
 }
 
 export const RecruiterDashboard: React.FC<RecruiterDashboardProps> = ({ user, onLogout }) => {
@@ -156,22 +156,22 @@ export const RecruiterDashboard: React.FC<RecruiterDashboardProps> = ({ user, on
   }, [applications]);
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans">
+    <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col font-sans">
       {/* ── TOP HEADER (ALL PROCESS IN ONE VIEW) ── */}
-      <header className="sticky top-0 z-40 bg-slate-900/90 backdrop-blur-md border-b border-slate-800/80 px-4 sm:px-6 py-3.5">
+      <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200 px-4 sm:px-6 py-3.5 shadow-xs">
         <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-600 to-indigo-400 flex items-center justify-center text-white shadow-lg shadow-indigo-500/20">
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-indigo-600 to-indigo-500 flex items-center justify-center text-white shadow-md shadow-indigo-500/20">
               <Building2 className="w-5 h-5" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <span className="font-bold text-white text-base tracking-tight">{user.company || 'TechCorp'}</span>
-                <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-indigo-500/20 text-indigo-400 border border-indigo-500/30">
+                <span className="font-bold text-slate-900 text-base tracking-tight">{user.company || 'TechCorp'}</span>
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-indigo-50 text-indigo-700 border border-indigo-200">
                   Recruiter Workspace
                 </span>
               </div>
-              <p className="text-xs text-slate-400">All-in-one Job Screening & AI Evaluation Hub</p>
+              <p className="text-xs text-slate-500">All-in-one Job Screening & AI Evaluation Hub</p>
             </div>
           </div>
 
@@ -179,25 +179,25 @@ export const RecruiterDashboard: React.FC<RecruiterDashboardProps> = ({ user, on
             {/* Quick Compare Trigger */}
             <button
               onClick={() => setShowCompareModal(true)}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-indigo-600 hover:bg-indigo-500 text-white shadow-md shadow-indigo-600/20 transition-all"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-indigo-600 hover:bg-indigo-700 text-white shadow-xs transition-all"
             >
               <GitCompare className="w-3.5 h-3.5" />
               <span>AI Compare ({compareIds.length}/2)</span>
             </button>
 
-            <div className="flex items-center gap-2.5 border-l border-slate-800 pl-3">
-              <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-indigo-600 to-purple-600 flex items-center justify-center text-white text-xs font-bold shadow-md">
+            <div className="flex items-center gap-2.5 border-l border-slate-200 pl-3">
+              <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-indigo-600 to-purple-600 flex items-center justify-center text-white text-xs font-bold shadow-xs">
                 {user.name.split(' ').filter(Boolean).map(n => n[0]).join('').slice(0, 2).toUpperCase() || 'R'}
               </div>
               <div className="hidden sm:flex flex-col items-start">
-                <span className="text-xs font-semibold text-white leading-tight">{user.name}</span>
-                <span className="text-[10px] text-indigo-400 font-mono font-medium">{user.id} · {user.company || 'Recruiter'}</span>
+                <span className="text-xs font-semibold text-slate-900 leading-tight">{user.name}</span>
+                <span className="text-[10px] text-indigo-600 font-mono font-medium">{user.id} · {user.company || 'Recruiter'}</span>
               </div>
             </div>
 
             <button
               onClick={onLogout}
-              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs text-slate-400 hover:text-red-400 hover:bg-red-500/10 transition-all border border-slate-800"
+              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-xs text-slate-600 hover:text-rose-600 hover:bg-rose-50 transition-all border border-slate-200"
               title="Logout"
             >
               <LogOut className="w-3.5 h-3.5" />
@@ -213,13 +213,13 @@ export const RecruiterDashboard: React.FC<RecruiterDashboardProps> = ({ user, on
         {/* ── TOP PIPELINE STATS BAR ── */}
         <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
           {[
-            { label: 'Total Applicants', value: stats.total,       icon: Users,       color: 'text-indigo-400', bg: 'bg-indigo-500/15 border-indigo-500/30' },
-            { label: 'Pending Review',   value: stats.pending,     icon: Clock,       color: 'text-amber-400',  bg: 'bg-amber-500/15 border-amber-500/30' },
-            { label: 'Shortlisted',      value: stats.shortlisted, icon: Star,        color: 'text-teal-400',   bg: 'bg-teal-500/15 border-teal-500/30' },
-            { label: 'In Interview',     value: stats.interview,   icon: Calendar,    color: 'text-blue-400',   bg: 'bg-blue-500/15 border-blue-500/30' },
-            { label: 'Offers / Hired',   value: stats.hired,       icon: CheckCircle, color: 'text-emerald-400',bg: 'bg-emerald-500/15 border-emerald-500/30' },
+            { label: 'Total Applicants', value: stats.total,       icon: Users,       color: 'text-indigo-600', bg: 'bg-indigo-50 border-indigo-200' },
+            { label: 'Pending Review',   value: stats.pending,     icon: Clock,       color: 'text-amber-600',  bg: 'bg-amber-50 border-amber-200' },
+            { label: 'Shortlisted',      value: stats.shortlisted, icon: Star,        color: 'text-teal-600',   bg: 'bg-teal-50 border-teal-200' },
+            { label: 'In Interview',     value: stats.interview,   icon: Calendar,    color: 'text-blue-600',   bg: 'bg-blue-50 border-blue-200' },
+            { label: 'Offers / Hired',   value: stats.hired,       icon: CheckCircle, color: 'text-emerald-600',bg: 'bg-emerald-50 border-emerald-200' },
           ].map(({ label, value, icon: Icon, color, bg }) => (
-            <div key={label} className="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-3.5 flex items-center gap-3">
+            <div key={label} className="bg-white border border-slate-200 rounded-2xl p-3.5 flex items-center gap-3 shadow-xs">
               <div className={`w-9 h-9 rounded-xl border flex items-center justify-center flex-shrink-0 ${bg}`}>
                 <Icon className={`w-4 h-4 ${color}`} />
               </div>
@@ -232,21 +232,21 @@ export const RecruiterDashboard: React.FC<RecruiterDashboardProps> = ({ user, on
         </div>
 
         {/* ── PROCESS 1: INSTANT JOB ROLE SELECTOR BAR (NO TAB SWITCH) ── */}
-        <div className="bg-slate-900/70 border border-slate-800/80 rounded-2xl p-4">
+        <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs">
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
-              <Briefcase className="w-4 h-4 text-indigo-400" />
-              <span className="text-xs font-bold text-white uppercase tracking-wider">Select Job Role to Review</span>
+              <Briefcase className="w-4 h-4 text-indigo-600" />
+              <span className="text-xs font-bold text-slate-900 uppercase tracking-wider">Select Job Role to Review</span>
             </div>
-            <span className="text-xs text-slate-400">Click any job to filter candidate applications instantly</span>
+            <span className="text-xs text-slate-500">Click any job to filter candidate applications instantly</span>
           </div>
           <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
             <button
               onClick={() => setSelectedJobId('all')}
               className={`px-3.5 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all border ${
                 selectedJobId === 'all'
-                  ? 'bg-indigo-600 text-white border-indigo-500 shadow-md shadow-indigo-600/30'
-                  : 'bg-slate-800/80 text-slate-300 border-slate-700/80 hover:bg-slate-800'
+                  ? 'bg-indigo-600 text-white border-indigo-600 shadow-xs'
+                  : 'bg-slate-100 text-slate-700 border-slate-200 hover:bg-slate-200/80 hover:text-slate-900'
               }`}
             >
               All Open Positions ({applications.length})
@@ -260,12 +260,12 @@ export const RecruiterDashboard: React.FC<RecruiterDashboardProps> = ({ user, on
                   onClick={() => setSelectedJobId(job.id)}
                   className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all border ${
                     isSelected
-                      ? 'bg-indigo-600 text-white border-indigo-500 shadow-md shadow-indigo-600/30'
-                      : 'bg-slate-800/80 text-slate-300 border-slate-700/80 hover:bg-slate-800 hover:border-slate-600'
+                      ? 'bg-indigo-600 text-white border-indigo-600 shadow-xs'
+                      : 'bg-slate-100 text-slate-700 border-slate-200 hover:bg-slate-200/80 hover:text-slate-900'
                   }`}
                 >
                   <span>{job.title}</span>
-                  <span className={`px-1.5 py-0.5 rounded-full text-[10px] ${isSelected ? 'bg-indigo-700 text-white' : 'bg-slate-700 text-slate-300'}`}>
+                  <span className={`px-1.5 py-0.5 rounded-full text-[10px] font-semibold ${isSelected ? 'bg-indigo-700 text-white' : 'bg-slate-200 text-slate-700'}`}>
                     {count}
                   </span>
                 </button>
@@ -275,20 +275,20 @@ export const RecruiterDashboard: React.FC<RecruiterDashboardProps> = ({ user, on
         </div>
 
         {/* ── AI SUMMARY STRIP: "WHO IS BETTER" QUICK RECOMMENDATION ── */}
-        <div className="bg-gradient-to-r from-indigo-950/80 via-slate-900/90 to-purple-950/70 border border-indigo-500/30 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-lg">
+        <div className="bg-gradient-to-r from-indigo-50 via-white to-purple-50 border border-indigo-200 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-indigo-500/20 border border-indigo-500/40 flex items-center justify-center flex-shrink-0">
-              <Sparkles className="w-5 h-5 text-indigo-400 animate-pulse" />
+            <div className="w-10 h-10 rounded-xl bg-indigo-100 border border-indigo-200 flex items-center justify-center flex-shrink-0">
+              <Sparkles className="w-5 h-5 text-indigo-600 animate-pulse" />
             </div>
             <div>
-              <div className="text-xs font-bold text-white flex items-center gap-2">
+              <div className="text-xs font-bold text-slate-900 flex items-center gap-2">
                 <span>AI Hiring Analysis: Highest Ranked Candidate</span>
-                <span className="px-2 py-0.5 rounded text-[10px] bg-emerald-500/20 text-emerald-400 font-mono font-bold">
+                <span className="px-2 py-0.5 rounded text-[10px] bg-emerald-100 text-emerald-800 border border-emerald-200 font-mono font-bold">
                   96% Match
                 </span>
               </div>
-              <p className="text-xs text-slate-300 mt-0.5">
-                <strong>Priya Nair</strong> (BITS Pilani · Full Stack) leads overall with verified Docker & PostgreSQL proficiencies.
+              <p className="text-xs text-slate-600 mt-0.5">
+                <strong className="text-slate-900">Priya Nair</strong> (BITS Pilani · Full Stack) leads overall with verified Docker & PostgreSQL proficiencies.
               </p>
             </div>
           </div>
@@ -298,7 +298,7 @@ export const RecruiterDashboard: React.FC<RecruiterDashboardProps> = ({ user, on
                 setCompareIds(['app-003', 'app-001']);
                 setShowCompareModal(true);
               }}
-              className="px-3 py-1.5 rounded-xl text-xs font-semibold bg-indigo-500/20 hover:bg-indigo-500/30 text-indigo-300 border border-indigo-500/40 transition-all flex items-center gap-1.5"
+              className="px-3 py-1.5 rounded-xl text-xs font-semibold bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 transition-all flex items-center gap-1.5"
             >
               <GitCompare className="w-3.5 h-3.5" />
               <span>Compare Priya vs Ananya</span>
@@ -307,8 +307,8 @@ export const RecruiterDashboard: React.FC<RecruiterDashboardProps> = ({ user, on
         </div>
 
         {statusMessage && (
-          <div className="bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 text-xs px-4 py-2.5 rounded-xl flex items-center gap-2 animate-in fade-in">
-            <CheckCircle2 className="w-4 h-4" />
+          <div className="bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs px-4 py-2.5 rounded-xl flex items-center gap-2 animate-in fade-in">
+            <CheckCircle2 className="w-4 h-4 text-emerald-600" />
             <span>{statusMessage}</span>
           </div>
         )}
@@ -319,14 +319,14 @@ export const RecruiterDashboard: React.FC<RecruiterDashboardProps> = ({ user, on
           {/* ── LEFT COLUMN: APPLICATIONS LIST WITH QUICK FILTERS & ACTIONS (7 cols) ── */}
           <div className="lg:col-span-7 space-y-4">
             {/* Search and status filters */}
-            <div className="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-3.5 flex flex-col sm:flex-row gap-2.5">
+            <div className="bg-white border border-slate-200 rounded-2xl p-3.5 flex flex-col sm:flex-row gap-2.5 shadow-xs">
               <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                 <input
                   value={search}
                   onChange={e => setSearch(e.target.value)}
                   placeholder="Search by candidate name, ID, or skill..."
-                  className="w-full pl-9 pr-3 py-2 rounded-xl bg-slate-800/90 border border-slate-700 text-white text-xs placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+                  className="w-full pl-9 pr-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-900 text-xs placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:bg-white"
                 />
               </div>
               <div className="flex items-center gap-2">
@@ -334,21 +334,21 @@ export const RecruiterDashboard: React.FC<RecruiterDashboardProps> = ({ user, on
                   <select
                     value={filterStatus}
                     onChange={e => setFilterStatus(e.target.value)}
-                    className="pl-3 pr-8 py-2 rounded-xl bg-slate-800/90 border border-slate-700 text-white text-xs appearance-none focus:outline-none cursor-pointer"
+                    className="pl-3 pr-8 py-2 rounded-xl bg-slate-50 border border-slate-200 text-slate-800 text-xs appearance-none focus:outline-none cursor-pointer focus:bg-white"
                   >
                     <option value="all">All Statuses</option>
                     {Object.keys(STATUS_CONFIG).map(s => <option key={s} value={s}>{s}</option>)}
                   </select>
-                  <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-3 h-3 text-slate-400 pointer-events-none" />
+                  <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-3 h-3 text-slate-500 pointer-events-none" />
                 </div>
-                <span className="text-xs text-slate-400 whitespace-nowrap">{filtered.length} candidate{filtered.length !== 1 ? 's' : ''}</span>
+                <span className="text-xs text-slate-500 whitespace-nowrap">{filtered.length} candidate{filtered.length !== 1 ? 's' : ''}</span>
               </div>
             </div>
 
             {/* Candidates card list */}
             <div className="space-y-2.5">
               {filtered.length === 0 ? (
-                <div className="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-10 text-center text-slate-500 text-sm">
+                <div className="bg-white border border-slate-200 rounded-2xl p-10 text-center text-slate-400 text-sm shadow-xs">
                   No applications match your filter criteria.
                 </div>
               ) : (
@@ -365,10 +365,10 @@ export const RecruiterDashboard: React.FC<RecruiterDashboardProps> = ({ user, on
                         setSelectedApp(app);
                         setRightPanelTab('dossier');
                       }}
-                      className={`w-full text-left bg-slate-900/60 border rounded-2xl p-4 transition-all hover:border-indigo-500/50 cursor-pointer ${
+                      className={`w-full text-left bg-white border rounded-2xl p-4 transition-all hover:border-indigo-400 hover:shadow-md cursor-pointer ${
                         isSelected
-                          ? 'border-indigo-500/70 bg-slate-850/80 shadow-lg shadow-indigo-950/40'
-                          : 'border-slate-800/80'
+                          ? 'border-indigo-500 bg-indigo-50/40 shadow-sm ring-1 ring-indigo-500/30'
+                          : 'border-slate-200 shadow-xs'
                       }`}
                     >
                       <div className="flex items-start gap-3">
@@ -378,45 +378,45 @@ export const RecruiterDashboard: React.FC<RecruiterDashboardProps> = ({ user, on
                           title="Select to compare who is better"
                           className={`mt-1 w-5 h-5 rounded-lg border flex items-center justify-center transition-all ${
                             isCheckedForCompare
-                              ? 'bg-indigo-600 border-indigo-500 text-white'
-                              : 'bg-slate-800 border-slate-700 text-transparent hover:border-slate-500'
+                              ? 'bg-indigo-600 border-indigo-600 text-white'
+                              : 'bg-white border-slate-300 text-transparent hover:border-indigo-400'
                           }`}
                         >
                           <Check className="w-3.5 h-3.5 stroke-[3]" />
                         </button>
 
                         {/* Avatar */}
-                        <div className="w-10 h-10 rounded-xl bg-indigo-500/20 border border-indigo-500/30 flex items-center justify-center font-bold text-indigo-300 text-sm flex-shrink-0">
+                        <div className="w-10 h-10 rounded-xl bg-indigo-50 border border-indigo-200 flex items-center justify-center font-bold text-indigo-700 text-sm flex-shrink-0">
                           {app.name.split(' ').map(n => n[0]).join('').slice(0, 2)}
                         </div>
 
                         {/* Candidate info */}
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 flex-wrap">
-                            <span className="font-bold text-sm text-white">{app.name}</span>
-                            <span className="text-[11px] text-indigo-400 font-mono">{app.candidateId}</span>
+                            <span className="font-bold text-sm text-slate-900">{app.name}</span>
+                            <span className="text-[11px] text-indigo-600 font-mono font-medium">{app.candidateId}</span>
                             <span className="text-[10px] text-slate-500 font-mono">CGPA: {app.cgpa}</span>
                             {app.documents?.some(d => d.status === 'Verified') && (
-                              <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 font-medium flex items-center gap-1">
+                              <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 font-semibold flex items-center gap-1">
                                 <ShieldCheck className="w-3 h-3" /> Verified KYC
                               </span>
                             )}
                           </div>
-                          <div className="text-xs text-slate-400 mt-0.5">
-                            {app.jobTitle} · <span className="text-slate-300">{app.college}</span>
+                          <div className="text-xs text-slate-500 mt-0.5">
+                            {app.jobTitle} · <span className="text-slate-700 font-medium">{app.college}</span>
                           </div>
 
                           {/* Skills tags */}
                           <div className="flex flex-wrap gap-1 mt-2">
                             {app.skills.map(sk => (
-                              <span key={sk} className="text-[11px] px-2 py-0.5 rounded-md bg-slate-800 border border-slate-700/80 text-slate-300">
+                              <span key={sk} className="text-[11px] px-2 py-0.5 rounded-md bg-slate-100 border border-slate-200 text-slate-700 font-medium">
                                 {sk}
                               </span>
                             ))}
                           </div>
 
                           {/* Direct Quick Status Stepper Buttons */}
-                          <div className="flex items-center gap-1.5 mt-3 pt-2 border-t border-slate-800/60" onClick={e => e.stopPropagation()}>
+                          <div className="flex items-center gap-1.5 mt-3 pt-2 border-t border-slate-100" onClick={e => e.stopPropagation()}>
                             <span className="text-[10px] text-slate-500 font-medium mr-1">Move to:</span>
                             {(['Shortlisted', 'Interview', 'Hired', 'Rejected'] as AppStatus[]).map(st => {
                               const active = app.status === st;
@@ -427,7 +427,7 @@ export const RecruiterDashboard: React.FC<RecruiterDashboardProps> = ({ user, on
                                   className={`text-[10px] font-semibold px-2 py-0.5 rounded-md border transition-all ${
                                     active
                                       ? `${STATUS_CONFIG[st].bg} ${STATUS_CONFIG[st].color} ring-1 ring-current`
-                                      : 'bg-slate-800/80 border-slate-700 text-slate-400 hover:text-white hover:bg-slate-750'
+                                      : 'bg-slate-50 border-slate-200 text-slate-600 hover:text-slate-900 hover:bg-slate-100'
                                   }`}
                                 >
                                   {st}
@@ -459,20 +459,20 @@ export const RecruiterDashboard: React.FC<RecruiterDashboardProps> = ({ user, on
           <div className="lg:col-span-5 space-y-4 lg:sticky lg:top-20 lg:max-h-[calc(100vh-6.5rem)] lg:overflow-y-auto pr-1">
 
             {/* View Switcher Tabs (Dossier vs Analytics) */}
-            <div className="bg-slate-900 border border-slate-800 rounded-2xl p-1.5 flex items-center gap-1 shadow-lg">
+            <div className="bg-white border border-slate-200 rounded-2xl p-1.5 flex items-center gap-1 shadow-xs">
               <button
                 type="button"
                 onClick={() => setRightPanelTab('dossier')}
                 className={`flex-1 py-2 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 ${
                   rightPanelTab === 'dossier'
-                    ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30'
-                    : 'text-slate-400 hover:text-white hover:bg-slate-800/80'
+                    ? 'bg-indigo-600 text-white shadow-xs'
+                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
                 }`}
               >
                 <User className="w-3.5 h-3.5" />
                 <span>Candidate Dossier</span>
                 {selectedApp && (
-                  <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-slate-800 text-indigo-300 font-mono">
+                  <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-100 font-mono font-semibold">
                     {selectedApp.name.split(' ')[0]}
                   </span>
                 )}
@@ -483,8 +483,8 @@ export const RecruiterDashboard: React.FC<RecruiterDashboardProps> = ({ user, on
                 onClick={() => setRightPanelTab('analytics')}
                 className={`flex-1 py-2 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 ${
                   rightPanelTab === 'analytics'
-                    ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30'
-                    : 'text-slate-400 hover:text-white hover:bg-slate-800/80'
+                    ? 'bg-indigo-600 text-white shadow-xs'
+                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
                 }`}
               >
                 <BarChart2 className="w-3.5 h-3.5" />
@@ -495,34 +495,34 @@ export const RecruiterDashboard: React.FC<RecruiterDashboardProps> = ({ user, on
             {rightPanelTab === 'dossier' ? (
               /* Selected candidate review drawer */
               selectedApp ? (
-                <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-5 shadow-2xl">
+                <div className="bg-white border border-slate-200 rounded-2xl p-5 space-y-5 shadow-sm">
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 rounded-xl bg-indigo-500/20 border border-indigo-500/30 flex items-center justify-center font-bold text-indigo-300 text-base shadow">
+                      <div className="w-12 h-12 rounded-xl bg-indigo-50 border border-indigo-200 flex items-center justify-center font-bold text-indigo-700 text-base shadow-xs">
                         {selectedApp.name.split(' ').map((n) => n[0]).join('').slice(0, 2)}
                       </div>
                       <div>
-                        <div className="font-bold text-white text-base">{selectedApp.name}</div>
-                        <div className="text-xs text-indigo-400 font-mono">{selectedApp.candidateId}</div>
+                        <div className="font-bold text-slate-900 text-base">{selectedApp.name}</div>
+                        <div className="text-xs text-indigo-600 font-mono font-medium">{selectedApp.candidateId}</div>
                       </div>
                     </div>
                     <div className="text-right">
                       <div className={`text-xl font-extrabold ${getScoreColor(selectedApp.matchScore)}`}>
                         {selectedApp.matchScore}%
                       </div>
-                      <div className="text-[10px] text-slate-400 font-medium">Match Fit</div>
+                      <div className="text-[10px] text-slate-500 font-medium">Match Fit</div>
                     </div>
                   </div>
 
                   {/* Match progress bar */}
                   <div className="space-y-1.5">
-                    <div className="flex justify-between text-xs text-slate-400">
+                    <div className="flex justify-between text-xs text-slate-500">
                       <span>Algorithm Fit Score</span>
-                      <span className="font-bold text-white">{selectedApp.matchScore} / 100</span>
+                      <span className="font-bold text-slate-900">{selectedApp.matchScore} / 100</span>
                     </div>
-                    <div className="w-full h-2 bg-slate-850 rounded-full overflow-hidden">
+                    <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
                       <div
-                        className="h-full rounded-full bg-gradient-to-r from-indigo-500 to-teal-400"
+                        className="h-full rounded-full bg-gradient-to-r from-indigo-500 to-teal-500"
                         style={{ width: `${selectedApp.matchScore}%` }}
                       />
                     </div>
@@ -530,46 +530,46 @@ export const RecruiterDashboard: React.FC<RecruiterDashboardProps> = ({ user, on
 
                   {/* Info Grid */}
                   <div className="grid grid-cols-2 gap-2 text-xs">
-                    <div className="bg-slate-800/70 rounded-xl p-2.5 border border-slate-750">
-                      <div className="text-[11px] text-slate-400">College / University</div>
-                      <div className="font-semibold text-slate-200 truncate mt-0.5">{selectedApp.college}</div>
+                    <div className="bg-slate-50 rounded-xl p-2.5 border border-slate-200">
+                      <div className="text-[11px] text-slate-500 font-medium">College / University</div>
+                      <div className="font-semibold text-slate-800 truncate mt-0.5">{selectedApp.college}</div>
                     </div>
-                    <div className="bg-slate-800/70 rounded-xl p-2.5 border border-slate-750">
-                      <div className="text-[11px] text-slate-400">Degree & CGPA</div>
-                      <div className="font-semibold text-slate-200 truncate mt-0.5">
+                    <div className="bg-slate-50 rounded-xl p-2.5 border border-slate-200">
+                      <div className="text-[11px] text-slate-500 font-medium">Degree & CGPA</div>
+                      <div className="font-semibold text-slate-800 truncate mt-0.5">
                         {selectedApp.degree} · {selectedApp.cgpa}
                       </div>
                     </div>
-                    <div className="bg-slate-800/70 rounded-xl p-2.5 border border-slate-750">
-                      <div className="text-[11px] text-slate-400">Applied Role</div>
-                      <div className="font-semibold text-slate-200 truncate mt-0.5">{selectedApp.role}</div>
+                    <div className="bg-slate-50 rounded-xl p-2.5 border border-slate-200">
+                      <div className="text-[11px] text-slate-500 font-medium">Applied Role</div>
+                      <div className="font-semibold text-slate-800 truncate mt-0.5">{selectedApp.role}</div>
                     </div>
-                    <div className="bg-slate-800/70 rounded-xl p-2.5 border border-slate-750">
-                      <div className="text-[11px] text-slate-400">Applied Date</div>
-                      <div className="font-semibold text-slate-200 truncate mt-0.5">{selectedApp.appliedDate}</div>
+                    <div className="bg-slate-50 rounded-xl p-2.5 border border-slate-200">
+                      <div className="text-[11px] text-slate-500 font-medium">Applied Date</div>
+                      <div className="font-semibold text-slate-800 truncate mt-0.5">{selectedApp.appliedDate}</div>
                     </div>
                   </div>
 
                   {/* Contact */}
-                  <div className="space-y-1 text-xs text-slate-400 border-t border-slate-800 pt-3">
+                  <div className="space-y-1 text-xs text-slate-500 border-t border-slate-100 pt-3">
                     <div className="flex items-center gap-2">
-                      <Mail className="w-3.5 h-3.5 text-slate-500" />
-                      <span>{selectedApp.email}</span>
+                      <Mail className="w-3.5 h-3.5 text-slate-400" />
+                      <span className="text-slate-700">{selectedApp.email}</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <Phone className="w-3.5 h-3.5 text-slate-500" />
-                      <span>{selectedApp.phone}</span>
+                      <Phone className="w-3.5 h-3.5 text-slate-400" />
+                      <span className="text-slate-700">{selectedApp.phone}</span>
                     </div>
                   </div>
 
                   {/* Skills verified */}
                   <div>
-                    <div className="text-xs font-semibold text-white mb-2">Verified Technical Skills</div>
+                    <div className="text-xs font-semibold text-slate-900 mb-2">Verified Technical Skills</div>
                     <div className="flex flex-wrap gap-1.5">
                       {selectedApp.skills.map((sk) => (
                         <span
                           key={sk}
-                          className="text-xs px-2.5 py-1 rounded-lg bg-indigo-500/15 border border-indigo-500/30 text-indigo-300 font-medium"
+                          className="text-xs px-2.5 py-1 rounded-lg bg-indigo-50 border border-indigo-200 text-indigo-700 font-medium"
                         >
                           {sk}
                         </span>
@@ -578,13 +578,13 @@ export const RecruiterDashboard: React.FC<RecruiterDashboardProps> = ({ user, on
                   </div>
 
                   {/* Verification Documents & KYC */}
-                  <div className="border-t border-slate-800 pt-4 space-y-3">
+                  <div className="border-t border-slate-100 pt-4 space-y-3">
                     <div className="flex items-center justify-between">
-                      <div className="text-xs font-semibold text-white flex items-center gap-1.5">
-                        <ShieldCheck className="w-4 h-4 text-emerald-400" />
+                      <div className="text-xs font-semibold text-slate-900 flex items-center gap-1.5">
+                        <ShieldCheck className="w-4 h-4 text-emerald-600" />
                         <span>Verification Documents (KYC)</span>
                       </div>
-                      <span className="text-[10px] text-emerald-400 font-bold bg-emerald-500/15 border border-emerald-500/30 px-2 py-0.5 rounded-full">
+                      <span className="text-[10px] text-emerald-800 font-bold bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">
                         {(selectedApp.documents || []).filter((d) => d.status === 'Verified').length} Verified
                       </span>
                     </div>
@@ -616,22 +616,22 @@ export const RecruiterDashboard: React.FC<RecruiterDashboardProps> = ({ user, on
                       ).map((doc) => (
                         <div
                           key={doc.id}
-                          className="p-2.5 rounded-xl bg-slate-800/80 border border-slate-700/80 flex items-center justify-between gap-2"
+                          className="p-2.5 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between gap-2"
                         >
                           <div className="flex items-center gap-2 min-w-0">
-                            <div className="w-7 h-7 rounded-lg bg-indigo-500/15 border border-indigo-500/30 text-indigo-400 flex items-center justify-center flex-shrink-0">
+                            <div className="w-7 h-7 rounded-lg bg-indigo-50 border border-indigo-200 text-indigo-600 flex items-center justify-center flex-shrink-0">
                               <FileCheck className="w-3.5 h-3.5" />
                             </div>
                             <div className="min-w-0">
-                              <div className="text-xs font-semibold text-white truncate">{doc.name}</div>
-                              <div className="text-[10px] text-slate-400">
+                              <div className="text-xs font-semibold text-slate-900 truncate">{doc.name}</div>
+                              <div className="text-[10px] text-slate-500">
                                 {doc.type} · {doc.fileSize}{' '}
                                 {doc.verificationScore ? `· ${doc.verificationScore}% OCR` : ''}
                               </div>
                             </div>
                           </div>
-                          <span className="text-[10px] px-2 py-0.5 rounded-full font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center gap-1 flex-shrink-0">
-                            <Check className="w-3 h-3" /> {doc.status}
+                          <span className="text-[10px] px-2 py-0.5 rounded-full font-bold bg-emerald-50 text-emerald-800 border border-emerald-200 flex items-center gap-1 flex-shrink-0">
+                            <Check className="w-3 h-3 text-emerald-600" /> {doc.status}
                           </span>
                         </div>
                       ))}
@@ -639,8 +639,8 @@ export const RecruiterDashboard: React.FC<RecruiterDashboardProps> = ({ user, on
                   </div>
 
                   {/* Application Actions */}
-                  <div className="border-t border-slate-800 pt-4 space-y-3">
-                    <div className="text-xs font-semibold text-white">Update Hiring Status</div>
+                  <div className="border-t border-slate-100 pt-4 space-y-3">
+                    <div className="text-xs font-semibold text-slate-900">Update Hiring Status</div>
                     <div className="grid grid-cols-2 gap-2">
                       {(['Shortlisted', 'Interview', 'Hired', 'Rejected'] as AppStatus[]).map((st) => {
                         const active = selectedApp.status === st;
@@ -652,8 +652,8 @@ export const RecruiterDashboard: React.FC<RecruiterDashboardProps> = ({ user, on
                             onClick={() => handleUpdateStatus(selectedApp.id, st)}
                             className={`flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl text-xs font-bold transition-all border ${
                               active
-                                ? `${cfg.bg} ${cfg.color} ring-2 ring-indigo-500/50`
-                                : 'bg-slate-800/80 border-slate-700 text-slate-300 hover:bg-slate-800 hover:text-white'
+                                ? `${cfg.bg} ${cfg.color} ring-2 ring-indigo-500/40`
+                                : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100 hover:text-slate-900'
                             }`}
                           >
                             <SIcon className="w-3.5 h-3.5" />
@@ -670,7 +670,7 @@ export const RecruiterDashboard: React.FC<RecruiterDashboardProps> = ({ user, on
                         e.preventDefault();
                         alert(`Downloading verified resume and dossier for ${selectedApp.name}...`);
                       }}
-                      className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-750 text-slate-200 text-xs font-semibold border border-slate-700 transition-all"
+                      className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-slate-900 hover:bg-indigo-700 text-white text-xs font-semibold transition-all shadow-xs"
                     >
                       <Download className="w-4 h-4" />
                       <span>Download Candidate Resume & Dossier</span>
@@ -678,7 +678,7 @@ export const RecruiterDashboard: React.FC<RecruiterDashboardProps> = ({ user, on
                   </div>
                 </div>
               ) : (
-                <div className="bg-slate-900 border border-slate-800 rounded-2xl p-8 text-center text-slate-400 text-sm shadow-xl">
+                <div className="bg-white border border-slate-200 rounded-2xl p-8 text-center text-slate-500 text-sm shadow-xs">
                   Click any candidate application on the left to inspect their dossier.
                 </div>
               )
@@ -686,13 +686,13 @@ export const RecruiterDashboard: React.FC<RecruiterDashboardProps> = ({ user, on
               /* Live Rankings and Analytics Panel */
               <div className="space-y-4">
                 {/* Process 3: Inline AI Ranking */}
-                <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-4 shadow-xl">
+                <div className="bg-white border border-slate-200 rounded-2xl p-5 space-y-4 shadow-sm">
                   <div className="flex items-center justify-between">
-                    <h3 className="font-bold text-white text-sm flex items-center gap-2">
-                      <Award className="w-4 h-4 text-amber-400" />
+                    <h3 className="font-bold text-slate-900 text-sm flex items-center gap-2">
+                      <Award className="w-4 h-4 text-amber-500" />
                       Top Candidates by Match Fit
                     </h3>
-                    <span className="text-[11px] text-slate-400">Live Ranking</span>
+                    <span className="text-[11px] text-slate-500">Live Ranking</span>
                   </div>
                   <div className="space-y-2">
                     {topCandidates.map((app, i) => (
@@ -702,15 +702,15 @@ export const RecruiterDashboard: React.FC<RecruiterDashboardProps> = ({ user, on
                           setSelectedApp(app);
                           setRightPanelTab('dossier');
                         }}
-                        className="flex items-center gap-3 p-2.5 rounded-xl hover:bg-slate-800/80 transition-all cursor-pointer border border-transparent hover:border-slate-750"
+                        className="flex items-center gap-3 p-2.5 rounded-xl hover:bg-slate-50 transition-all cursor-pointer border border-transparent hover:border-slate-200"
                       >
-                        <span className="text-xs font-bold font-mono text-slate-500 w-4">{i + 1}</span>
-                        <div className="w-8 h-8 rounded-lg bg-indigo-500/20 border border-indigo-500/30 flex items-center justify-center text-xs font-bold text-indigo-300 shrink-0">
+                        <span className="text-xs font-bold font-mono text-slate-400 w-4">{i + 1}</span>
+                        <div className="w-8 h-8 rounded-lg bg-indigo-50 border border-indigo-200 flex items-center justify-center text-xs font-bold text-indigo-700 shrink-0">
                           {app.name.split(' ').map((n) => n[0]).join('').slice(0, 2)}
                         </div>
                         <div className="flex-1 min-w-0">
-                          <div className="text-xs font-bold text-white truncate">{app.name}</div>
-                          <div className="text-[11px] text-slate-400 truncate">{app.jobTitle}</div>
+                          <div className="text-xs font-bold text-slate-900 truncate">{app.name}</div>
+                          <div className="text-[11px] text-slate-500 truncate">{app.jobTitle}</div>
                         </div>
                         <div className={`text-xs font-bold ${getScoreColor(app.matchScore)}`}>
                           {app.matchScore}%
@@ -721,9 +721,9 @@ export const RecruiterDashboard: React.FC<RecruiterDashboardProps> = ({ user, on
                 </div>
 
                 {/* Pipeline Status Breakdown Inline Widget */}
-                <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-3 shadow-xl">
-                  <h3 className="font-bold text-white text-xs uppercase tracking-wider flex items-center gap-2">
-                    <BarChart2 className="w-4 h-4 text-indigo-400" />
+                <div className="bg-white border border-slate-200 rounded-2xl p-5 space-y-3 shadow-sm">
+                  <h3 className="font-bold text-slate-900 text-xs uppercase tracking-wider flex items-center gap-2">
+                    <BarChart2 className="w-4 h-4 text-indigo-600" />
                     Pipeline Breakdown
                   </h3>
                   {(Object.entries(STATUS_CONFIG) as [AppStatus, (typeof STATUS_CONFIG)[AppStatus]][]).map(
@@ -734,15 +734,15 @@ export const RecruiterDashboard: React.FC<RecruiterDashboardProps> = ({ user, on
                       return (
                         <div key={status} className="space-y-1">
                           <div className="flex items-center justify-between text-xs">
-                            <span className={`flex items-center gap-1.5 font-medium ${cfg.color}`}>
+                            <span className={`flex items-center gap-1.5 font-semibold ${cfg.color}`}>
                               <SIcon className="w-3.5 h-3.5" />
                               {status}
                             </span>
-                            <span className="text-slate-400">
+                            <span className="text-slate-500">
                               {count} ({pct}%)
                             </span>
                           </div>
-                          <div className="w-full h-1.5 bg-slate-850 rounded-full overflow-hidden">
+                          <div className="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
                             <div
                               className={`h-full rounded-full ${
                                 status === 'Pending'
@@ -752,7 +752,7 @@ export const RecruiterDashboard: React.FC<RecruiterDashboardProps> = ({ user, on
                                   : status === 'Interview'
                                   ? 'bg-blue-500'
                                   : status === 'Rejected'
-                                  ? 'bg-red-500'
+                                  ? 'bg-rose-500'
                                   : 'bg-emerald-500'
                               }`}
                               style={{ width: `${pct}%` }}
@@ -771,28 +771,28 @@ export const RecruiterDashboard: React.FC<RecruiterDashboardProps> = ({ user, on
 
       {/* ── MODAL: AI "WHO IS BETTER" SIDE-BY-SIDE COMPARISON ── */}
       {showCompareModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm animate-in fade-in">
-          <div className="w-full max-w-3xl bg-slate-900 border border-slate-700/80 rounded-3xl p-6 shadow-2xl space-y-5 max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in">
+          <div className="w-full max-w-3xl bg-white border border-slate-200 rounded-3xl p-6 shadow-2xl space-y-5 max-h-[90vh] overflow-y-auto">
             <div className="flex items-start justify-between">
               <div>
-                <h3 className="text-lg font-bold text-white flex items-center gap-2">
-                  <Sparkles className="w-5 h-5 text-indigo-400" />
+                <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
+                  <Sparkles className="w-5 h-5 text-indigo-600" />
                   AI Candidate Comparison: "Who is Better?"
                 </h3>
-                <p className="text-xs text-slate-400 mt-1">
+                <p className="text-xs text-slate-500 mt-1">
                   Objective algorithmic comparison across verified skills, academic performance, and job fit.
                 </p>
               </div>
               <button
                 onClick={() => setShowCompareModal(false)}
-                className="p-1.5 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800"
+                className="p-1.5 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors"
               >
                 <XCircle className="w-5 h-5" />
               </button>
             </div>
 
             {comparedCandidates.length < 2 ? (
-              <div className="bg-slate-800/60 rounded-2xl p-6 text-center text-slate-400 text-sm">
+              <div className="bg-slate-50 rounded-2xl p-6 text-center text-slate-500 text-sm border border-slate-200">
                 Please select at least 2 candidates using the checkboxes in the applications list to compare them!
               </div>
             ) : (
@@ -806,37 +806,37 @@ export const RecruiterDashboard: React.FC<RecruiterDashboardProps> = ({ user, on
                         key={cand.id}
                         className={`rounded-2xl p-4 border space-y-3 ${
                           isWinner
-                            ? 'bg-indigo-950/40 border-indigo-500/60 shadow-lg shadow-indigo-950/50'
-                            : 'bg-slate-800/60 border-slate-700'
+                            ? 'bg-indigo-50/50 border-indigo-300 shadow-sm ring-1 ring-indigo-400/30'
+                            : 'bg-slate-50 border-slate-200'
                         }`}
                       >
                         <div className="flex items-start justify-between">
                           <div>
                             {isWinner && (
-                              <span className="inline-block px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 mb-1">
+                              <span className="inline-block px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200 mb-1">
                                 🌟 Recommended Choice
                               </span>
                             )}
-                            <h4 className="font-bold text-white text-base">{cand.name}</h4>
-                            <div className="text-xs text-indigo-400 font-mono">{cand.candidateId}</div>
+                            <h4 className="font-bold text-slate-900 text-base">{cand.name}</h4>
+                            <div className="text-xs text-indigo-600 font-mono font-medium">{cand.candidateId}</div>
                           </div>
                           <div className={`text-xl font-black ${getScoreColor(cand.matchScore)}`}>
                             {cand.matchScore}%
                           </div>
                         </div>
 
-                        <div className="space-y-1.5 text-xs text-slate-300">
-                          <div><strong>Role:</strong> {cand.jobTitle}</div>
-                          <div><strong>Institute:</strong> {cand.college}</div>
-                          <div><strong>CGPA:</strong> {cand.cgpa} / 10</div>
-                          <div><strong>Experience:</strong> {cand.experience}</div>
+                        <div className="space-y-1.5 text-xs text-slate-700">
+                          <div><strong className="text-slate-900">Role:</strong> {cand.jobTitle}</div>
+                          <div><strong className="text-slate-900">Institute:</strong> {cand.college}</div>
+                          <div><strong className="text-slate-900">CGPA:</strong> {cand.cgpa} / 10</div>
+                          <div><strong className="text-slate-900">Experience:</strong> {cand.experience}</div>
                         </div>
 
                         <div>
-                          <div className="text-[11px] text-slate-400 font-semibold mb-1">Skills:</div>
+                          <div className="text-[11px] text-slate-500 font-semibold mb-1">Skills:</div>
                           <div className="flex flex-wrap gap-1">
                             {cand.skills.map(sk => (
-                              <span key={sk} className="text-[10px] px-2 py-0.5 rounded bg-slate-800 text-slate-200 border border-slate-700">
+                              <span key={sk} className="text-[10px] px-2 py-0.5 rounded bg-white text-slate-700 border border-slate-200 font-medium">
                                 {sk}
                               </span>
                             ))}
@@ -848,14 +848,14 @@ export const RecruiterDashboard: React.FC<RecruiterDashboardProps> = ({ user, on
                 </div>
 
                 {/* AI Executive Summary Verdict */}
-                <div className="bg-slate-950/80 border border-indigo-500/30 rounded-2xl p-4 space-y-2 text-xs">
-                  <div className="font-bold text-white flex items-center gap-2">
-                    <Sparkles className="w-4 h-4 text-indigo-400" />
+                <div className="bg-indigo-50/70 border border-indigo-200 rounded-2xl p-4 space-y-2 text-xs">
+                  <div className="font-bold text-slate-900 flex items-center gap-2">
+                    <Sparkles className="w-4 h-4 text-indigo-600" />
                     AI Hiring Verdict:
                   </div>
-                  <p className="text-slate-300 leading-relaxed">
-                    Between <strong>{comparedCandidates[0].name}</strong> ({comparedCandidates[0].matchScore}% match) and <strong>{comparedCandidates[1].name}</strong> ({comparedCandidates[1].matchScore}% match),{' '}
-                    <strong>{comparedCandidates[0].matchScore >= comparedCandidates[1].matchScore ? comparedCandidates[0].name : comparedCandidates[1].name}</strong> demonstrates superior technical versatility, higher academic scoring, and comprehensive coverage of required production tech stacks.
+                  <p className="text-slate-700 leading-relaxed">
+                    Between <strong className="text-slate-900">{comparedCandidates[0].name}</strong> ({comparedCandidates[0].matchScore}% match) and <strong className="text-slate-900">{comparedCandidates[1].name}</strong> ({comparedCandidates[1].matchScore}% match),{' '}
+                    <strong className="text-slate-900">{comparedCandidates[0].matchScore >= comparedCandidates[1].matchScore ? comparedCandidates[0].name : comparedCandidates[1].name}</strong> demonstrates superior technical versatility, higher academic scoring, and comprehensive coverage of required production tech stacks.
                   </p>
                 </div>
               </div>
@@ -864,7 +864,7 @@ export const RecruiterDashboard: React.FC<RecruiterDashboardProps> = ({ user, on
             <div className="flex justify-end pt-2">
               <button
                 onClick={() => setShowCompareModal(false)}
-                className="px-5 py-2 rounded-xl text-xs font-semibold bg-indigo-600 hover:bg-indigo-500 text-white"
+                className="px-5 py-2 rounded-xl text-xs font-semibold bg-indigo-600 hover:bg-indigo-700 text-white shadow-xs transition-colors"
               >
                 Close Comparison
               </button>
