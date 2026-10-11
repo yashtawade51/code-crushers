@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import {
-  Briefcase, Users, CheckCircle, XCircle, Clock, Eye,
+  Briefcase, Users, User, CheckCircle, XCircle, Clock, Eye,
   Search, ChevronDown, Star, MapPin, GraduationCap,
   Phone, Mail, FileText, TrendingUp, BarChart2, Building2,
   Sparkles, LogOut, Download, ArrowUpRight, Calendar,
@@ -97,6 +97,7 @@ export const RecruiterDashboard: React.FC<RecruiterDashboardProps> = ({ user, on
   const [selectedJobId, setSelectedJobId] = useState<string>('all');
   const [filterStatus, setFilterStatus] = useState<string>('all');
   const [statusMessage, setStatusMessage] = useState<string>('');
+  const [rightPanelTab, setRightPanelTab] = useState<'dossier' | 'analytics'>('dossier');
 
   // Compare candidates state (up to 2 candidates)
   const [compareIds, setCompareIds] = useState<string[]>(['app-003', 'app-001']);
@@ -184,9 +185,14 @@ export const RecruiterDashboard: React.FC<RecruiterDashboardProps> = ({ user, on
               <span>AI Compare ({compareIds.length}/2)</span>
             </button>
 
-            <div className="hidden sm:flex flex-col items-end border-l border-slate-800 pl-3">
-              <span className="text-xs font-semibold text-white">{user.name}</span>
-              <span className="text-[11px] text-indigo-400 font-mono">{user.id}</span>
+            <div className="flex items-center gap-2.5 border-l border-slate-800 pl-3">
+              <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-indigo-600 to-purple-600 flex items-center justify-center text-white text-xs font-bold shadow-md">
+                {user.name.split(' ').filter(Boolean).map(n => n[0]).join('').slice(0, 2).toUpperCase() || 'R'}
+              </div>
+              <div className="hidden sm:flex flex-col items-start">
+                <span className="text-xs font-semibold text-white leading-tight">{user.name}</span>
+                <span className="text-[10px] text-indigo-400 font-mono font-medium">{user.id} · {user.company || 'Recruiter'}</span>
+              </div>
             </div>
 
             <button
@@ -355,7 +361,10 @@ export const RecruiterDashboard: React.FC<RecruiterDashboardProps> = ({ user, on
                   return (
                     <div
                       key={app.id}
-                      onClick={() => setSelectedApp(app)}
+                      onClick={() => {
+                        setSelectedApp(app);
+                        setRightPanelTab('dossier');
+                      }}
                       className={`w-full text-left bg-slate-900/60 border rounded-2xl p-4 transition-all hover:border-indigo-500/50 cursor-pointer ${
                         isSelected
                           ? 'border-indigo-500/70 bg-slate-850/80 shadow-lg shadow-indigo-950/40'
@@ -447,248 +456,315 @@ export const RecruiterDashboard: React.FC<RecruiterDashboardProps> = ({ user, on
           </div>
 
           {/* ── RIGHT COLUMN: CANDIDATE DETAIL REVIEW & EMBEDDED ANALYTICS (5 cols) ── */}
-          <div className="lg:col-span-5 space-y-4">
+          <div className="lg:col-span-5 space-y-4 lg:sticky lg:top-20 lg:max-h-[calc(100vh-6.5rem)] lg:overflow-y-auto pr-1">
 
-            {/* Selected candidate review drawer */}
-            {selectedApp ? (
-              <div className="bg-slate-900/70 border border-slate-800/90 rounded-2xl p-5 space-y-5 sticky top-20 shadow-xl">
-                <div className="flex items-start justify-between gap-3">
-                  <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 rounded-xl bg-indigo-500/20 border border-indigo-500/30 flex items-center justify-center font-bold text-indigo-300 text-base shadow">
-                      {selectedApp.name.split(' ').map(n => n[0]).join('').slice(0, 2)}
+            {/* View Switcher Tabs (Dossier vs Analytics) */}
+            <div className="bg-slate-900 border border-slate-800 rounded-2xl p-1.5 flex items-center gap-1 shadow-lg">
+              <button
+                type="button"
+                onClick={() => setRightPanelTab('dossier')}
+                className={`flex-1 py-2 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 ${
+                  rightPanelTab === 'dossier'
+                    ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30'
+                    : 'text-slate-400 hover:text-white hover:bg-slate-800/80'
+                }`}
+              >
+                <User className="w-3.5 h-3.5" />
+                <span>Candidate Dossier</span>
+                {selectedApp && (
+                  <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-slate-800 text-indigo-300 font-mono">
+                    {selectedApp.name.split(' ')[0]}
+                  </span>
+                )}
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setRightPanelTab('analytics')}
+                className={`flex-1 py-2 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 ${
+                  rightPanelTab === 'analytics'
+                    ? 'bg-indigo-600 text-white shadow-md shadow-indigo-600/30'
+                    : 'text-slate-400 hover:text-white hover:bg-slate-800/80'
+                }`}
+              >
+                <BarChart2 className="w-3.5 h-3.5" />
+                <span>Live Rankings & Pipeline</span>
+              </button>
+            </div>
+
+            {rightPanelTab === 'dossier' ? (
+              /* Selected candidate review drawer */
+              selectedApp ? (
+                <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-5 shadow-2xl">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex items-center gap-3">
+                      <div className="w-12 h-12 rounded-xl bg-indigo-500/20 border border-indigo-500/30 flex items-center justify-center font-bold text-indigo-300 text-base shadow">
+                        {selectedApp.name.split(' ').map((n) => n[0]).join('').slice(0, 2)}
+                      </div>
+                      <div>
+                        <div className="font-bold text-white text-base">{selectedApp.name}</div>
+                        <div className="text-xs text-indigo-400 font-mono">{selectedApp.candidateId}</div>
+                      </div>
                     </div>
-                    <div>
-                      <div className="font-bold text-white text-base">{selectedApp.name}</div>
-                      <div className="text-xs text-indigo-400 font-mono">{selectedApp.candidateId}</div>
+                    <div className="text-right">
+                      <div className={`text-xl font-extrabold ${getScoreColor(selectedApp.matchScore)}`}>
+                        {selectedApp.matchScore}%
+                      </div>
+                      <div className="text-[10px] text-slate-400 font-medium">Match Fit</div>
                     </div>
                   </div>
-                  <div className="text-right">
-                    <div className={`text-xl font-extrabold ${getScoreColor(selectedApp.matchScore)}`}>
-                      {selectedApp.matchScore}%
+
+                  {/* Match progress bar */}
+                  <div className="space-y-1.5">
+                    <div className="flex justify-between text-xs text-slate-400">
+                      <span>Algorithm Fit Score</span>
+                      <span className="font-bold text-white">{selectedApp.matchScore} / 100</span>
                     </div>
-                    <div className="text-[10px] text-slate-400 font-medium">Match Fit</div>
-                  </div>
-                </div>
-
-                {/* Match progress bar */}
-                <div className="space-y-1.5">
-                  <div className="flex justify-between text-xs text-slate-400">
-                    <span>Algorithm Fit Score</span>
-                    <span className="font-bold text-white">{selectedApp.matchScore} / 100</span>
-                  </div>
-                  <div className="w-full h-2 bg-slate-800 rounded-full overflow-hidden">
-                    <div
-                      className="h-full rounded-full bg-gradient-to-r from-indigo-500 to-teal-400"
-                      style={{ width: `${selectedApp.matchScore}%` }}
-                    />
-                  </div>
-                </div>
-
-                {/* Info Grid */}
-                <div className="grid grid-cols-2 gap-2 text-xs">
-                  <div className="bg-slate-800/60 rounded-xl p-2.5">
-                    <div className="text-[11px] text-slate-500">College / University</div>
-                    <div className="font-semibold text-slate-200 truncate mt-0.5">{selectedApp.college}</div>
-                  </div>
-                  <div className="bg-slate-800/60 rounded-xl p-2.5">
-                    <div className="text-[11px] text-slate-500">Degree & CGPA</div>
-                    <div className="font-semibold text-slate-200 truncate mt-0.5">{selectedApp.degree} · {selectedApp.cgpa}</div>
-                  </div>
-                  <div className="bg-slate-800/60 rounded-xl p-2.5">
-                    <div className="text-[11px] text-slate-500">Applied Role</div>
-                    <div className="font-semibold text-slate-200 truncate mt-0.5">{selectedApp.role}</div>
-                  </div>
-                  <div className="bg-slate-800/60 rounded-xl p-2.5">
-                    <div className="text-[11px] text-slate-500">Applied Date</div>
-                    <div className="font-semibold text-slate-200 truncate mt-0.5">{selectedApp.appliedDate}</div>
-                  </div>
-                </div>
-
-                {/* Contact */}
-                <div className="space-y-1 text-xs text-slate-400 border-t border-slate-800 pt-3">
-                  <div className="flex items-center gap-2">
-                    <Mail className="w-3.5 h-3.5 text-slate-500" />
-                    <span>{selectedApp.email}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Phone className="w-3.5 h-3.5 text-slate-500" />
-                    <span>{selectedApp.phone}</span>
-                  </div>
-                </div>
-
-                {/* Skills verified */}
-                <div>
-                  <div className="text-xs font-semibold text-white mb-2">Verified Technical Skills</div>
-                  <div className="flex flex-wrap gap-1.5">
-                    {selectedApp.skills.map(sk => (
-                      <span key={sk} className="text-xs px-2.5 py-1 rounded-lg bg-indigo-500/15 border border-indigo-500/30 text-indigo-300 font-medium">
-                        {sk}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Verification Documents & KYC */}
-                <div className="border-t border-slate-800 pt-4 space-y-3">
-                  <div className="flex items-center justify-between">
-                    <div className="text-xs font-semibold text-white flex items-center gap-1.5">
-                      <ShieldCheck className="w-4 h-4 text-emerald-400" />
-                      <span>Verification Documents (KYC)</span>
+                    <div className="w-full h-2 bg-slate-850 rounded-full overflow-hidden">
+                      <div
+                        className="h-full rounded-full bg-gradient-to-r from-indigo-500 to-teal-400"
+                        style={{ width: `${selectedApp.matchScore}%` }}
+                      />
                     </div>
-                    <span className="text-[10px] text-emerald-400 font-bold bg-emerald-500/15 border border-emerald-500/30 px-2 py-0.5 rounded-full">
-                      {(selectedApp.documents || []).filter(d => d.status === 'Verified').length} Verified
-                    </span>
                   </div>
 
-                  <div className="space-y-2">
-                    {(selectedApp.documents || [
-                      {
-                        id: 'doc-001',
-                        name: `${selectedApp.name.replace(/\s+/g, '_')}_Resume.pdf`,
-                        type: 'Resume / CV',
-                        fileSize: '1.4 MB',
-                        uploadedAt: selectedApp.appliedDate,
-                        status: 'Verified',
-                        verificationScore: 98,
-                        notes: 'Verified against institute records.'
-                      },
-                      {
-                        id: 'doc-002',
-                        name: `${selectedApp.college.replace(/\s+/g, '_')}_Student_ID.png`,
-                        type: 'College ID',
-                        fileSize: '2.1 MB',
-                        uploadedAt: selectedApp.appliedDate,
-                        status: 'Verified',
-                        verificationScore: 95,
-                        notes: 'Student identification roll verified.'
-                      }
-                    ]).map(doc => (
-                      <div key={doc.id} className="p-2.5 rounded-xl bg-slate-800/60 border border-slate-700/80 flex items-center justify-between gap-2">
-                        <div className="flex items-center gap-2 min-w-0">
-                          <div className="w-7 h-7 rounded-lg bg-indigo-500/15 border border-indigo-500/30 text-indigo-400 flex items-center justify-center flex-shrink-0">
-                            <FileCheck className="w-3.5 h-3.5" />
-                          </div>
-                          <div className="min-w-0">
-                            <div className="text-xs font-semibold text-white truncate">{doc.name}</div>
-                            <div className="text-[10px] text-slate-400">{doc.type} · {doc.fileSize} {doc.verificationScore ? `· ${doc.verificationScore}% OCR` : ''}</div>
-                          </div>
-                        </div>
-                        <span className="text-[10px] px-2 py-0.5 rounded-full font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center gap-1 flex-shrink-0">
-                          <Check className="w-3 h-3" /> {doc.status}
+                  {/* Info Grid */}
+                  <div className="grid grid-cols-2 gap-2 text-xs">
+                    <div className="bg-slate-800/70 rounded-xl p-2.5 border border-slate-750">
+                      <div className="text-[11px] text-slate-400">College / University</div>
+                      <div className="font-semibold text-slate-200 truncate mt-0.5">{selectedApp.college}</div>
+                    </div>
+                    <div className="bg-slate-800/70 rounded-xl p-2.5 border border-slate-750">
+                      <div className="text-[11px] text-slate-400">Degree & CGPA</div>
+                      <div className="font-semibold text-slate-200 truncate mt-0.5">
+                        {selectedApp.degree} · {selectedApp.cgpa}
+                      </div>
+                    </div>
+                    <div className="bg-slate-800/70 rounded-xl p-2.5 border border-slate-750">
+                      <div className="text-[11px] text-slate-400">Applied Role</div>
+                      <div className="font-semibold text-slate-200 truncate mt-0.5">{selectedApp.role}</div>
+                    </div>
+                    <div className="bg-slate-800/70 rounded-xl p-2.5 border border-slate-750">
+                      <div className="text-[11px] text-slate-400">Applied Date</div>
+                      <div className="font-semibold text-slate-200 truncate mt-0.5">{selectedApp.appliedDate}</div>
+                    </div>
+                  </div>
+
+                  {/* Contact */}
+                  <div className="space-y-1 text-xs text-slate-400 border-t border-slate-800 pt-3">
+                    <div className="flex items-center gap-2">
+                      <Mail className="w-3.5 h-3.5 text-slate-500" />
+                      <span>{selectedApp.email}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Phone className="w-3.5 h-3.5 text-slate-500" />
+                      <span>{selectedApp.phone}</span>
+                    </div>
+                  </div>
+
+                  {/* Skills verified */}
+                  <div>
+                    <div className="text-xs font-semibold text-white mb-2">Verified Technical Skills</div>
+                    <div className="flex flex-wrap gap-1.5">
+                      {selectedApp.skills.map((sk) => (
+                        <span
+                          key={sk}
+                          className="text-xs px-2.5 py-1 rounded-lg bg-indigo-500/15 border border-indigo-500/30 text-indigo-300 font-medium"
+                        >
+                          {sk}
                         </span>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Verification Documents & KYC */}
+                  <div className="border-t border-slate-800 pt-4 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <div className="text-xs font-semibold text-white flex items-center gap-1.5">
+                        <ShieldCheck className="w-4 h-4 text-emerald-400" />
+                        <span>Verification Documents (KYC)</span>
+                      </div>
+                      <span className="text-[10px] text-emerald-400 font-bold bg-emerald-500/15 border border-emerald-500/30 px-2 py-0.5 rounded-full">
+                        {(selectedApp.documents || []).filter((d) => d.status === 'Verified').length} Verified
+                      </span>
+                    </div>
+
+                    <div className="space-y-2">
+                      {(
+                        selectedApp.documents || [
+                          {
+                            id: 'doc-001',
+                            name: `${selectedApp.name.replace(/\s+/g, '_')}_Resume.pdf`,
+                            type: 'Resume / CV',
+                            fileSize: '1.4 MB',
+                            uploadedAt: selectedApp.appliedDate,
+                            status: 'Verified',
+                            verificationScore: 98,
+                            notes: 'Verified against institute records.',
+                          },
+                          {
+                            id: 'doc-002',
+                            name: `${selectedApp.college.replace(/\s+/g, '_')}_Student_ID.png`,
+                            type: 'College ID',
+                            fileSize: '2.1 MB',
+                            uploadedAt: selectedApp.appliedDate,
+                            status: 'Verified',
+                            verificationScore: 95,
+                            notes: 'Student identification roll verified.',
+                          },
+                        ]
+                      ).map((doc) => (
+                        <div
+                          key={doc.id}
+                          className="p-2.5 rounded-xl bg-slate-800/80 border border-slate-700/80 flex items-center justify-between gap-2"
+                        >
+                          <div className="flex items-center gap-2 min-w-0">
+                            <div className="w-7 h-7 rounded-lg bg-indigo-500/15 border border-indigo-500/30 text-indigo-400 flex items-center justify-center flex-shrink-0">
+                              <FileCheck className="w-3.5 h-3.5" />
+                            </div>
+                            <div className="min-w-0">
+                              <div className="text-xs font-semibold text-white truncate">{doc.name}</div>
+                              <div className="text-[10px] text-slate-400">
+                                {doc.type} · {doc.fileSize}{' '}
+                                {doc.verificationScore ? `· ${doc.verificationScore}% OCR` : ''}
+                              </div>
+                            </div>
+                          </div>
+                          <span className="text-[10px] px-2 py-0.5 rounded-full font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center gap-1 flex-shrink-0">
+                            <Check className="w-3 h-3" /> {doc.status}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Application Actions */}
+                  <div className="border-t border-slate-800 pt-4 space-y-3">
+                    <div className="text-xs font-semibold text-white">Update Hiring Status</div>
+                    <div className="grid grid-cols-2 gap-2">
+                      {(['Shortlisted', 'Interview', 'Hired', 'Rejected'] as AppStatus[]).map((st) => {
+                        const active = selectedApp.status === st;
+                        const cfg = STATUS_CONFIG[st];
+                        const SIcon = cfg.icon;
+                        return (
+                          <button
+                            key={st}
+                            onClick={() => handleUpdateStatus(selectedApp.id, st)}
+                            className={`flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl text-xs font-bold transition-all border ${
+                              active
+                                ? `${cfg.bg} ${cfg.color} ring-2 ring-indigo-500/50`
+                                : 'bg-slate-800/80 border-slate-700 text-slate-300 hover:bg-slate-800 hover:text-white'
+                            }`}
+                          >
+                            <SIcon className="w-3.5 h-3.5" />
+                            <span>{st}</span>
+                          </button>
+                        );
+                      })}
+                    </div>
+
+                    {/* Resume button */}
+                    <a
+                      href="#"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        alert(`Downloading verified resume and dossier for ${selectedApp.name}...`);
+                      }}
+                      className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-750 text-slate-200 text-xs font-semibold border border-slate-700 transition-all"
+                    >
+                      <Download className="w-4 h-4" />
+                      <span>Download Candidate Resume & Dossier</span>
+                    </a>
+                  </div>
+                </div>
+              ) : (
+                <div className="bg-slate-900 border border-slate-800 rounded-2xl p-8 text-center text-slate-400 text-sm shadow-xl">
+                  Click any candidate application on the left to inspect their dossier.
+                </div>
+              )
+            ) : (
+              /* Live Rankings and Analytics Panel */
+              <div className="space-y-4">
+                {/* Process 3: Inline AI Ranking */}
+                <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-4 shadow-xl">
+                  <div className="flex items-center justify-between">
+                    <h3 className="font-bold text-white text-sm flex items-center gap-2">
+                      <Award className="w-4 h-4 text-amber-400" />
+                      Top Candidates by Match Fit
+                    </h3>
+                    <span className="text-[11px] text-slate-400">Live Ranking</span>
+                  </div>
+                  <div className="space-y-2">
+                    {topCandidates.map((app, i) => (
+                      <div
+                        key={app.id}
+                        onClick={() => {
+                          setSelectedApp(app);
+                          setRightPanelTab('dossier');
+                        }}
+                        className="flex items-center gap-3 p-2.5 rounded-xl hover:bg-slate-800/80 transition-all cursor-pointer border border-transparent hover:border-slate-750"
+                      >
+                        <span className="text-xs font-bold font-mono text-slate-500 w-4">{i + 1}</span>
+                        <div className="w-8 h-8 rounded-lg bg-indigo-500/20 border border-indigo-500/30 flex items-center justify-center text-xs font-bold text-indigo-300 shrink-0">
+                          {app.name.split(' ').map((n) => n[0]).join('').slice(0, 2)}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="text-xs font-bold text-white truncate">{app.name}</div>
+                          <div className="text-[11px] text-slate-400 truncate">{app.jobTitle}</div>
+                        </div>
+                        <div className={`text-xs font-bold ${getScoreColor(app.matchScore)}`}>
+                          {app.matchScore}%
+                        </div>
                       </div>
                     ))}
                   </div>
                 </div>
 
-                {/* Application Actions */}
-                <div className="border-t border-slate-800 pt-4 space-y-3">
-                  <div className="text-xs font-semibold text-white">Update Hiring Status</div>
-                  <div className="grid grid-cols-2 gap-2">
-                    {(['Shortlisted', 'Interview', 'Hired', 'Rejected'] as AppStatus[]).map(st => {
-                      const active = selectedApp.status === st;
-                      const cfg = STATUS_CONFIG[st];
+                {/* Pipeline Status Breakdown Inline Widget */}
+                <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-3 shadow-xl">
+                  <h3 className="font-bold text-white text-xs uppercase tracking-wider flex items-center gap-2">
+                    <BarChart2 className="w-4 h-4 text-indigo-400" />
+                    Pipeline Breakdown
+                  </h3>
+                  {(Object.entries(STATUS_CONFIG) as [AppStatus, (typeof STATUS_CONFIG)[AppStatus]][]).map(
+                    ([status, cfg]) => {
+                      const count = applications.filter((a) => a.status === status).length;
+                      const pct = applications.length ? Math.round((count / applications.length) * 100) : 0;
                       const SIcon = cfg.icon;
                       return (
-                        <button
-                          key={st}
-                          onClick={() => handleUpdateStatus(selectedApp.id, st)}
-                          className={`flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl text-xs font-bold transition-all border ${
-                            active
-                              ? `${cfg.bg} ${cfg.color} ring-2 ring-indigo-500/50`
-                              : 'bg-slate-800/80 border-slate-700 text-slate-300 hover:bg-slate-800 hover:text-white'
-                          }`}
-                        >
-                          <SIcon className="w-3.5 h-3.5" />
-                          <span>{st}</span>
-                        </button>
+                        <div key={status} className="space-y-1">
+                          <div className="flex items-center justify-between text-xs">
+                            <span className={`flex items-center gap-1.5 font-medium ${cfg.color}`}>
+                              <SIcon className="w-3.5 h-3.5" />
+                              {status}
+                            </span>
+                            <span className="text-slate-400">
+                              {count} ({pct}%)
+                            </span>
+                          </div>
+                          <div className="w-full h-1.5 bg-slate-850 rounded-full overflow-hidden">
+                            <div
+                              className={`h-full rounded-full ${
+                                status === 'Pending'
+                                  ? 'bg-amber-500'
+                                  : status === 'Shortlisted'
+                                  ? 'bg-teal-500'
+                                  : status === 'Interview'
+                                  ? 'bg-blue-500'
+                                  : status === 'Rejected'
+                                  ? 'bg-red-500'
+                                  : 'bg-emerald-500'
+                              }`}
+                              style={{ width: `${pct}%` }}
+                            />
+                          </div>
+                        </div>
                       );
-                    })}
-                  </div>
-
-                  {/* Resume button */}
-                  <a
-                    href="#"
-                    onClick={e => { e.preventDefault(); alert(`Downloading verified resume for ${selectedApp.name}...`); }}
-                    className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-750 text-slate-200 text-xs font-semibold border border-slate-700 transition-all"
-                  >
-                    <Download className="w-4 h-4" />
-                    <span>Download Candidate Resume & Dossier</span>
-                  </a>
+                    }
+                  )}
                 </div>
               </div>
-            ) : (
-              <div className="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-8 text-center text-slate-400 text-sm">
-                Click any candidate application on the left to inspect their dossier.
-              </div>
             )}
-
-            {/* ── PROCESS 3: INLINE AI RANKING & ANALYTICS WIDGET (IN SAME TAB) ── */}
-            <div className="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-5 space-y-4">
-              <div className="flex items-center justify-between">
-                <h3 className="font-bold text-white text-sm flex items-center gap-2">
-                  <Award className="w-4 h-4 text-amber-400" />
-                  Top Candidates by Match Fit
-                </h3>
-                <span className="text-[11px] text-slate-400">Live Ranking</span>
-              </div>
-              <div className="space-y-2">
-                {topCandidates.map((app, i) => (
-                  <div
-                    key={app.id}
-                    onClick={() => setSelectedApp(app)}
-                    className="flex items-center gap-3 p-2 rounded-xl hover:bg-slate-800/70 transition-all cursor-pointer border border-transparent hover:border-slate-700"
-                  >
-                    <span className="text-xs font-bold font-mono text-slate-500 w-4">{i + 1}</span>
-                    <div className="w-8 h-8 rounded-lg bg-indigo-500/20 border border-indigo-500/30 flex items-center justify-center text-xs font-bold text-indigo-300">
-                      {app.name.split(' ').map(n => n[0]).join('').slice(0, 2)}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="text-xs font-bold text-white truncate">{app.name}</div>
-                      <div className="text-[11px] text-slate-400 truncate">{app.jobTitle}</div>
-                    </div>
-                    <div className={`text-xs font-bold ${getScoreColor(app.matchScore)}`}>
-                      {app.matchScore}%
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Pipeline Status Breakdown Inline Widget */}
-            <div className="bg-slate-900/60 border border-slate-800/80 rounded-2xl p-5 space-y-3">
-              <h3 className="font-bold text-white text-xs uppercase tracking-wider flex items-center gap-2">
-                <BarChart2 className="w-4 h-4 text-indigo-400" />
-                Pipeline Breakdown
-              </h3>
-              {(Object.entries(STATUS_CONFIG) as [AppStatus, typeof STATUS_CONFIG[AppStatus]][]).map(([status, cfg]) => {
-                const count = applications.filter(a => a.status === status).length;
-                const pct = applications.length ? Math.round((count / applications.length) * 100) : 0;
-                const SIcon = cfg.icon;
-                return (
-                  <div key={status} className="space-y-1">
-                    <div className="flex items-center justify-between text-xs">
-                      <span className={`flex items-center gap-1.5 font-medium ${cfg.color}`}>
-                        <SIcon className="w-3.5 h-3.5" />{status}
-                      </span>
-                      <span className="text-slate-400">{count} ({pct}%)</span>
-                    </div>
-                    <div className="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden">
-                      <div
-                        className={`h-full rounded-full ${
-                          status === 'Pending' ? 'bg-amber-500' :
-                          status === 'Shortlisted' ? 'bg-teal-500' :
-                          status === 'Interview' ? 'bg-blue-500' :
-                          status === 'Rejected' ? 'bg-red-500' : 'bg-emerald-500'
-                        }`}
-                        style={{ width: `${pct}%` }}
-                      />
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-
           </div>
         </div>
       </div>

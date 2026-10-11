@@ -93,38 +93,46 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLogin, onCancel, initial
 
     setTimeout(() => {
       setIsLoading(false);
+      const emailPrefix = email.trim().split('@')[0] || '';
+      const fallbackNameFromEmail = emailPrefix
+        .split(/[._-]/)
+        .filter(Boolean)
+        .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+        .join(' ');
+
+      const resolvedName =
+        name.trim() || fallbackNameFromEmail || (isCandidate ? 'Ananya Sharma' : 'Vikram Malhotra');
+
       const user: AuthUser = {
         id: generateId(activeRole),
-        name: name.trim() || (isCandidate ? 'Ananya Sharma' : 'Vikram Malhotra'),
+        name: resolvedName,
         email: email.trim(),
         role: activeRole,
         ...(activeRole === 'recruiter' ? { company: company.trim() || 'TechNova Solutions' } : {}),
       };
       onLogin(user);
-    }, 600);
+    }, 400);
   };
 
-  const handleDemoLogin = () => {
+  const DEMO_PERSONAS = {
+    candidate: [
+      { id: 'CAND-28471', name: 'Ananya Sharma', email: 'ananya@campus.edu', tag: 'NIT Trichy · Frontend', role: 'candidate' as const },
+      { id: 'CAND-71932', name: 'Rohan Deshmukh', email: 'rohan.deshmukh@university.edu', tag: 'Apex Inst · Data Science', role: 'candidate' as const },
+      { id: 'CAND-40285', name: 'Vikram Joshi', email: 'vikram.j@techcol.edu', tag: 'State Eng · Cloud/DevOps', role: 'candidate' as const },
+    ],
+    recruiter: [
+      { id: 'RECR-78815', name: 'Vikram Malhotra', email: 'vikram@technova.com', company: 'TechNova Solutions', tag: 'TechNova Solutions · VP Hiring', role: 'recruiter' as const },
+      { id: 'RECR-99214', name: 'Meera Nair', email: 'meera@infosys.com', company: 'Infosys BPM', tag: 'Infosys BPM · Lead Campus Talent', role: 'recruiter' as const },
+      { id: 'RECR-84012', name: 'Siddharth Rao', email: 'siddharth@tcs.com', company: 'Tata Consultancy Services', tag: 'TCS · Global University Hiring', role: 'recruiter' as const },
+    ],
+  };
+
+  const handlePersonaLogin = (p: AuthUser) => {
     setIsLoading(true);
     setTimeout(() => {
       setIsLoading(false);
-      if (isCandidate) {
-        onLogin({
-          id: 'CAND-28471',
-          name: 'Ananya Sharma',
-          email: 'ananya@campus.edu',
-          role: 'candidate',
-        });
-      } else {
-        onLogin({
-          id: 'RECR-84012',
-          name: 'Siddharth Rao',
-          email: 'siddharth@technova.com',
-          role: 'recruiter',
-          company: 'TechNova Solutions',
-        });
-      }
-    }, 400);
+      onLogin(p);
+    }, 300);
   };
 
   // Color theming tokens
@@ -264,16 +272,35 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLogin, onCancel, initial
             </div>
 
             {/* Quick Demo Login trigger */}
-            <div className="relative z-10 pt-8 border-t border-slate-800/80 mt-6">
-              <button
-                type="button"
-                onClick={handleDemoLogin}
-                disabled={isLoading}
-                className="w-full py-2.5 px-4 rounded-xl text-xs font-bold bg-slate-800/90 hover:bg-slate-750 text-white border border-slate-700/80 transition-all flex items-center justify-center gap-2 shadow-sm"
-              >
-                <Zap className="w-4 h-4 text-amber-400" />
-                <span>⚡ Instant Login with Demo {isCandidate ? 'Candidate' : 'Recruiter'}</span>
-              </button>
+            <div className="relative z-10 pt-6 border-t border-slate-800/80 mt-6 space-y-2.5">
+              <div className="flex items-center justify-between text-xs text-slate-400 font-semibold">
+                <span className="flex items-center gap-1.5">
+                  <Zap className="w-3.5 h-3.5 text-amber-400" />
+                  <span>Choose Demo {isCandidate ? 'Candidate' : 'Recruiter'} Profile:</span>
+                </span>
+              </div>
+              <div className="space-y-1.5">
+                {(isCandidate ? DEMO_PERSONAS.candidate : DEMO_PERSONAS.recruiter).map((p) => (
+                  <button
+                    key={p.id}
+                    type="button"
+                    onClick={() => handlePersonaLogin(p)}
+                    disabled={isLoading}
+                    className="w-full text-left p-2.5 rounded-xl bg-slate-900/80 hover:bg-slate-800 text-white border border-slate-800/90 hover:border-slate-700 transition-all flex items-center justify-between gap-2 shadow-sm group"
+                  >
+                    <div className="min-w-0">
+                      <div className="text-xs font-bold text-white group-hover:text-amber-300 transition-colors flex items-center gap-1.5 truncate">
+                        <span>{p.name}</span>
+                        <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-slate-800 text-slate-400 font-normal">
+                          {p.id}
+                        </span>
+                      </div>
+                      <div className="text-[11px] text-slate-400 truncate mt-0.5">{p.tag}</div>
+                    </div>
+                    <ArrowRight className="w-3.5 h-3.5 text-slate-500 group-hover:text-amber-400 transition-transform group-hover:translate-x-0.5 shrink-0" />
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
 
@@ -381,6 +408,47 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLogin, onCancel, initial
                       </div>
                       {errors.phone && <p className="text-[11px] text-red-400 mt-1">{errors.phone}</p>}
                     </div>
+                  </>
+                )}
+
+                {mode === 'login' && (
+                  <>
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-300 mb-1">
+                        Full Name (Profile Name)
+                      </label>
+                      <div className="relative">
+                        <User className="w-4 h-4 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2" />
+                        <input
+                          type="text"
+                          value={name}
+                          onChange={e => setName(e.target.value)}
+                          placeholder={isCandidate ? "Enter candidate name (e.g. Rohan Deshmukh)" : "Enter recruiter name (e.g. Meera Nair)"}
+                          className={`w-full pl-9 pr-3 py-2.5 rounded-xl bg-slate-900 border text-xs text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 ${theme.ring} border-slate-800`}
+                        />
+                      </div>
+                      <p className="text-[10px] text-slate-500 mt-1">
+                        Your profile name across RozgarLink will be set to this name.
+                      </p>
+                    </div>
+
+                    {!isCandidate && (
+                      <div>
+                        <label className="block text-xs font-semibold text-slate-300 mb-1">
+                          Company / Organization
+                        </label>
+                        <div className="relative">
+                          <Building2 className="w-4 h-4 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2" />
+                          <input
+                            type="text"
+                            value={company}
+                            onChange={e => setCompany(e.target.value)}
+                            placeholder="e.g. TechNova Solutions, Infosys BPM, TCS"
+                            className={`w-full pl-9 pr-3 py-2.5 rounded-xl bg-slate-900 border text-xs text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 ${theme.ring} border-slate-800`}
+                          />
+                        </div>
+                      </div>
+                    )}
                   </>
                 )}
 

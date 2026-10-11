@@ -21,7 +21,7 @@ import {
   ApplicationTrackerItem,
   ApplicationStatus,
 } from './types';
-import { MOCK_OPPORTUNITIES, DEFAULT_STUDENT_PROFILE } from './data/mockData';
+import { MOCK_OPPORTUNITIES, DEFAULT_STUDENT_PROFILE, PRESET_PROFILES } from './data/mockData';
 import { evaluateOpportunityMatch } from './services/matchingEngine';
 import {
   getStoredProfile,
@@ -254,16 +254,22 @@ export default function App() {
         onLogin={(user) => {
           setAuthUser(user);
           if (user.role === 'candidate') {
-            setProfile((prev) => ({
-              ...prev,
-              id: user.id,
-              fullName: user.name || prev.fullName,
-              email: user.email || prev.email,
-            }));
+            const matchingPreset = PRESET_PROFILES.find(
+              (p) => p.profile.fullName.toLowerCase() === user.name.toLowerCase()
+            );
+            const baseProfile = matchingPreset ? matchingPreset.profile : profile;
+            const updatedProfile: StudentProfile = {
+              ...baseProfile,
+              id: user.id || baseProfile.id,
+              fullName: user.name,
+              email: user.email || baseProfile.email,
+            };
+            setProfile(updatedProfile);
+            saveStoredProfile(updatedProfile);
             setCurrentTab('dashboard');
             addToast('success', `Welcome, ${user.name}!`, `Signed in as Candidate (${user.id})`);
           } else {
-            addToast('success', `Welcome, ${user.name}!`, `Recruiter portal activated (${user.id})`);
+            addToast('success', `Welcome, ${user.name}!`, `Recruiter workspace active for ${user.company || 'your organization'} (${user.id})`);
           }
         }}
         onCancel={() => setCurrentTab('landing')}
