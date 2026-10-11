@@ -1,13 +1,27 @@
 import React, { useState } from 'react';
-import { Compass, Menu, X, ArrowUpRight, ShieldCheck } from 'lucide-react';
+import {
+  Compass, Menu, X, ArrowUpRight, ShieldCheck,
+  Building2, LogOut, LogIn, User
+} from 'lucide-react';
+import { AuthUser, UserRole } from './LoginPage';
 
 interface NavbarProps {
   currentTab: string;
   onNavigate: (tab: string) => void;
   savedCount: number;
+  authUser?: AuthUser | null;
+  onOpenLogin?: (role?: UserRole) => void;
+  onLogout?: () => void;
 }
 
-export const Navbar: React.FC<NavbarProps> = ({ currentTab, onNavigate, savedCount }) => {
+export const Navbar: React.FC<NavbarProps> = ({
+  currentTab,
+  onNavigate,
+  savedCount,
+  authUser,
+  onOpenLogin,
+  onLogout,
+}) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const navItems = [
@@ -22,7 +36,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentTab, onNavigate, savedCou
   return (
     <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between gap-8 h-16">
+        <div className="flex items-center justify-between gap-6 h-16">
           {/* Zone 1: Single text wordmark */}
           <button
             onClick={() => {
@@ -40,7 +54,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentTab, onNavigate, savedCou
           </button>
 
           {/* Zone 2: 4-5 single-line nav links */}
-          <nav className="hidden md:flex items-center gap-6 text-sm font-medium">
+          <nav className="hidden lg:flex items-center gap-5 text-sm font-medium">
             {navItems.map((item) => {
               const isActive = currentTab === item.id;
               return (
@@ -62,8 +76,9 @@ export const Navbar: React.FC<NavbarProps> = ({ currentTab, onNavigate, savedCou
             })}
           </nav>
 
-          {/* Zone 3: Actions */}
-          <div className="hidden md:flex items-center gap-2.5 shrink-0">
+          {/* Zone 3: Actions + Auth Integration */}
+          <div className="hidden sm:flex items-center gap-2.5 shrink-0">
+            {/* Verify Docs */}
             <button
               onClick={() => onNavigate('profile')}
               className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-teal-800 bg-teal-50 border border-teal-200/90 rounded-lg hover:bg-teal-100 transition-colors whitespace-nowrap shrink-0 shadow-sm"
@@ -73,26 +88,69 @@ export const Navbar: React.FC<NavbarProps> = ({ currentTab, onNavigate, savedCou
               <span>Verify Docs</span>
             </button>
 
+            {/* Opportunities button */}
             {currentTab !== 'explore' ? (
               <button
                 onClick={() => onNavigate('explore')}
-                className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-white bg-slate-900 rounded-lg hover:bg-teal-700 transition-colors shadow-sm whitespace-nowrap shrink-0"
+                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold text-white bg-slate-900 rounded-lg hover:bg-teal-700 transition-colors shadow-sm whitespace-nowrap shrink-0"
               >
-                <span>Find Opportunities</span>
+                <span>Find Jobs</span>
                 <ArrowUpRight className="w-3.5 h-3.5" />
               </button>
             ) : (
               <button
                 onClick={() => onNavigate('dashboard')}
-                className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-slate-800 bg-slate-100 border border-slate-200 rounded-lg hover:bg-slate-200 transition-colors whitespace-nowrap shrink-0"
+                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold text-slate-800 bg-slate-100 border border-slate-200 rounded-lg hover:bg-slate-200 transition-colors whitespace-nowrap shrink-0"
               >
-                <span>View Dashboard</span>
+                <span>Dashboard</span>
               </button>
+            )}
+
+            {/* Joined Login / Auth Section */}
+            {authUser ? (
+              <div className="flex items-center gap-2 pl-2 border-l border-slate-200">
+                <div className="flex flex-col items-end">
+                  <span className="text-xs font-bold text-slate-800 leading-tight">{authUser.name}</span>
+                  <span className="text-[10px] text-teal-700 font-mono font-semibold">{authUser.id}</span>
+                </div>
+                <button
+                  onClick={() => onOpenLogin?.('recruiter')}
+                  className="px-2.5 py-1 rounded-lg text-xs font-medium text-slate-600 hover:text-indigo-600 hover:bg-indigo-50 border border-slate-200 transition-all flex items-center gap-1"
+                  title="Switch to Recruiter Workspace"
+                >
+                  <Building2 className="w-3.5 h-3.5 text-indigo-500" />
+                  <span className="hidden xl:inline">Recruiter</span>
+                </button>
+                <button
+                  onClick={onLogout}
+                  className="p-1.5 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 border border-slate-200 transition-colors"
+                  title="Logout"
+                >
+                  <LogOut className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            ) : (
+              <div className="flex items-center gap-2 pl-2 border-l border-slate-200">
+                <button
+                  onClick={() => onOpenLogin?.('candidate')}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-teal-800 bg-teal-50 border border-teal-200 rounded-lg hover:bg-teal-100 transition-colors"
+                >
+                  <LogIn className="w-3.5 h-3.5 text-teal-600" />
+                  <span>Candidate Login</span>
+                </button>
+                <button
+                  onClick={() => onOpenLogin?.('recruiter')}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-indigo-800 bg-indigo-50 border border-indigo-200 rounded-lg hover:bg-indigo-100 transition-colors"
+                >
+                  <Building2 className="w-3.5 h-3.5 text-indigo-600" />
+                  <span>Recruiter Portal</span>
+                </button>
+              </div>
             )}
           </div>
 
           {/* Mobile menu trigger */}
-          <div className="flex md:hidden items-center">
+          <div className="flex sm:hidden items-center">
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className="p-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg focus:outline-none"
@@ -106,7 +164,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentTab, onNavigate, savedCou
 
       {/* Mobile drawer */}
       {mobileMenuOpen && (
-        <div className="md:hidden border-b border-slate-200 bg-white px-4 pt-2 pb-5 space-y-1">
+        <div className="sm:hidden border-b border-slate-200 bg-white px-4 pt-2 pb-5 space-y-2">
           {navItems.map((item) => (
             <button
               key={item.id}
@@ -114,7 +172,7 @@ export const Navbar: React.FC<NavbarProps> = ({ currentTab, onNavigate, savedCou
                 onNavigate(item.id);
                 setMobileMenuOpen(false);
               }}
-              className={`w-full text-left px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+              className={`w-full text-left px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                 currentTab === item.id
                   ? 'bg-teal-50 text-teal-800 font-semibold'
                   : 'text-slate-700 hover:bg-slate-50'
@@ -123,17 +181,47 @@ export const Navbar: React.FC<NavbarProps> = ({ currentTab, onNavigate, savedCou
               {item.label}
             </button>
           ))}
-          <div className="pt-3 border-t border-slate-100">
-            <button
-              onClick={() => {
-                onNavigate('explore');
-                setMobileMenuOpen(false);
-              }}
-              className="w-full flex items-center justify-center gap-2 py-2.5 px-4 text-sm font-semibold text-white bg-slate-900 rounded-lg shadow-sm hover:bg-teal-700 transition-colors"
-            >
-              <span>Find Opportunities</span>
-              <ArrowUpRight className="w-4 h-4" />
-            </button>
+          <div className="pt-3 border-t border-slate-100 space-y-2">
+            {authUser ? (
+              <div className="flex items-center justify-between p-2 rounded-lg bg-slate-50 border border-slate-200">
+                <div>
+                  <div className="text-xs font-bold text-slate-800">{authUser.name}</div>
+                  <div className="text-[10px] text-teal-700 font-mono font-semibold">{authUser.id}</div>
+                </div>
+                <button
+                  onClick={() => {
+                    onLogout?.();
+                    setMobileMenuOpen(false);
+                  }}
+                  className="text-xs text-red-600 font-semibold hover:underline"
+                >
+                  Logout
+                </button>
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  onClick={() => {
+                    onOpenLogin?.('candidate');
+                    setMobileMenuOpen(false);
+                  }}
+                  className="w-full flex items-center justify-center gap-1.5 py-2 px-3 text-xs font-semibold text-teal-800 bg-teal-50 border border-teal-200 rounded-lg"
+                >
+                  <LogIn className="w-3.5 h-3.5" />
+                  <span>Candidate</span>
+                </button>
+                <button
+                  onClick={() => {
+                    onOpenLogin?.('recruiter');
+                    setMobileMenuOpen(false);
+                  }}
+                  className="w-full flex items-center justify-center gap-1.5 py-2 px-3 text-xs font-semibold text-indigo-800 bg-indigo-50 border border-indigo-200 rounded-lg"
+                >
+                  <Building2 className="w-3.5 h-3.5" />
+                  <span>Recruiter</span>
+                </button>
+              </div>
+            )}
           </div>
         </div>
       )}

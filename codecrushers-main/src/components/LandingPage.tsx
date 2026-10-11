@@ -8,6 +8,7 @@ import {
   CheckCircle,
   GraduationCap,
   Sparkles,
+  Building2,
 } from 'lucide-react';
 import { Opportunity, StudentProfile } from '../types';
 
@@ -16,6 +17,7 @@ interface LandingPageProps {
   opportunities: Opportunity[];
   profile: StudentProfile;
   onSelectOpportunity: (opp: Opportunity) => void;
+  onOpenLogin?: (role?: 'candidate' | 'recruiter') => void;
 }
 
 export const LandingPage: React.FC<LandingPageProps> = ({
@@ -23,6 +25,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({
   opportunities,
   profile,
   onSelectOpportunity,
+  onOpenLogin,
 }) => {
   const featuredOpps = opportunities.filter((o) => o.featured).slice(0, 3);
 
@@ -65,6 +68,33 @@ export const LandingPage: React.FC<LandingPageProps> = ({
                 >
                   <span>Explore How It Works</span>
                 </a>
+              </div>
+
+              {/* Dual Portal Gateway (Joined Login) */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                <button
+                  onClick={() => onOpenLogin ? onOpenLogin('candidate') : onNavigate('dashboard')}
+                  className="p-3 rounded-2xl bg-teal-500/10 border border-teal-500/20 hover:border-teal-500/50 text-left transition-all hover:bg-teal-500/15 group shadow-sm"
+                >
+                  <div className="flex items-center gap-2 mb-1">
+                    <GraduationCap className="w-4 h-4 text-teal-600" />
+                    <span className="text-xs font-bold text-slate-900">Candidate Portal</span>
+                    <span className="text-[10px] bg-teal-100 text-teal-800 px-1.5 py-0.5 rounded font-mono font-bold ml-auto">CAND-ID</span>
+                  </div>
+                  <p className="text-[11px] text-slate-600">Match skills, verify credentials, and apply to 500+ jobs.</p>
+                </button>
+
+                <button
+                  onClick={() => onOpenLogin ? onOpenLogin('recruiter') : onNavigate('login')}
+                  className="p-3 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 hover:border-indigo-500/50 text-left transition-all hover:bg-indigo-500/15 group shadow-sm"
+                >
+                  <div className="flex items-center gap-2 mb-1">
+                    <Building2 className="w-4 h-4 text-indigo-600" />
+                    <span className="text-xs font-bold text-slate-900">Recruiter Portal</span>
+                    <span className="text-[10px] bg-indigo-100 text-indigo-800 px-1.5 py-0.5 rounded font-mono font-bold ml-auto">RECR-ID</span>
+                  </div>
+                  <p className="text-[11px] text-slate-600">Review applicants, AI compare "who is better", and hire.</p>
+                </button>
               </div>
 
               {/* Active Profile Quick Summary */}

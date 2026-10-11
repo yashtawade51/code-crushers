@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { LoginPage, AuthUser } from './components/LoginPage';
+import { LoginPage, AuthUser, UserRole } from './components/LoginPage';
 import { RecruiterDashboard } from './components/RecruiterDashboard';
 import { Navbar } from './components/Navbar';
 import { LandingPage } from './components/LandingPage';
@@ -34,8 +34,19 @@ import {
 
 export default function App() {
   // Auth State
-  const [authUser, setAuthUser] = useState<AuthUser | null>(null);
+  const [authUser, setAuthUser] = useState<AuthUser | null>({
+    id: 'CAND-28471',
+    name: 'Ananya Sharma',
+    email: 'ananya@campus.edu',
+    role: 'candidate',
+  });
+  const [loginRole, setLoginRole] = useState<UserRole | undefined>(undefined);
   const isLoggedIn = authUser !== null;
+
+  const handleOpenLogin = (role?: UserRole) => {
+    setLoginRole(role);
+    setCurrentTab('login');
+  };
 
   // Navigation State
   const [currentTab, setCurrentTab] = useState<string>('landing');
@@ -223,12 +234,41 @@ export default function App() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [currentTab]);
 
-  if (!authUser) {
-    return <LoginPage onLogin={(user) => setAuthUser(user)} />;
+  if (authUser?.role === 'recruiter') {
+    return (
+      <RecruiterDashboard
+        user={authUser}
+        onLogout={() => {
+          setAuthUser(null);
+          setCurrentTab('landing');
+          addToast('info', 'Logged Out', 'Signed out of recruiter portal.');
+        }}
+      />
+    );
   }
 
-  if (authUser.role === 'recruiter') {
-    return <RecruiterDashboard user={authUser} onLogout={() => setAuthUser(null)} />;
+  if (currentTab === 'login') {
+    return (
+      <LoginPage
+        initialRole={loginRole}
+        onLogin={(user) => {
+          setAuthUser(user);
+          if (user.role === 'candidate') {
+            setProfile((prev) => ({
+              ...prev,
+              id: user.id,
+              fullName: user.name || prev.fullName,
+              email: user.email || prev.email,
+            }));
+            setCurrentTab('dashboard');
+            addToast('success', `Welcome, ${user.name}!`, `Signed in as Candidate (${user.id})`);
+          } else {
+            addToast('success', `Welcome, ${user.name}!`, `Recruiter portal activated (${user.id})`);
+          }
+        }}
+        onCancel={() => setCurrentTab('landing')}
+      />
+    );
   }
 
   return (
@@ -238,6 +278,12 @@ export default function App() {
         currentTab={currentTab}
         onNavigate={setCurrentTab}
         savedCount={savedIds.length}
+        authUser={authUser}
+        onOpenLogin={handleOpenLogin}
+        onLogout={() => {
+          setAuthUser(null);
+          addToast('info', 'Signed Out', 'You are now browsing as guest.');
+        }}
       />
 
       {/* 2. MAIN ACTIVE VIEW ROUTING */}
@@ -248,6 +294,7 @@ export default function App() {
             opportunities={opportunities}
             profile={profile}
             onSelectOpportunity={(opp) => setSelectedOpportunity(opp)}
+            onOpenLogin={handleOpenLogin}
           />
         )}
 

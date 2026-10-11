@@ -17,6 +17,8 @@ export interface AuthUser {
 
 interface LoginPageProps {
   onLogin: (user: AuthUser) => void;
+  onCancel?: () => void;
+  initialRole?: UserRole;
 }
 
 type AuthMode = 'login' | 'register';
@@ -43,9 +45,9 @@ const RECRUITER_FEATURES = [
   { icon: TrendingUp,   text: 'Analytics & Hiring Insights' },
 ];
 
-export const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
-  const [step, setStep]         = useState<Step>('role-select');
-  const [role, setRole]         = useState<UserRole>('candidate');
+export const LoginPage: React.FC<LoginPageProps> = ({ onLogin, onCancel, initialRole }) => {
+  const [step, setStep]         = useState<Step>(initialRole ? 'auth' : 'role-select');
+  const [role, setRole]         = useState<UserRole>(initialRole || 'candidate');
   const [mode, setMode]         = useState<AuthMode>('login');
   const [showPwd, setShowPwd]   = useState(false);
   const [showCPwd, setShowCPwd] = useState(false);
@@ -139,6 +141,19 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
     return (
       <div className="min-h-screen bg-slate-950 flex items-center justify-center p-6">
         <div className="w-full max-w-2xl space-y-10">
+          {/* Top navigation */}
+          {onCancel && (
+            <div className="flex justify-start">
+              <button
+                onClick={onCancel}
+                className="flex items-center gap-1.5 text-xs font-semibold text-slate-400 hover:text-white px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-800 transition-colors"
+              >
+                <ChevronLeft className="w-4 h-4" />
+                <span>Back to RozgarLink Home</span>
+              </button>
+            </div>
+          )}
+
           {/* Logo */}
           <div className="flex items-center justify-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-teal-500 flex items-center justify-center shadow-lg shadow-teal-500/30">
@@ -279,7 +294,12 @@ export const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
             <button id="back-to-role" onClick={back} className="flex items-center gap-1.5 text-slate-400 hover:text-white text-xs font-medium transition-colors">
               <ChevronLeft className="w-4 h-4" />Back
             </button>
-            <div className="flex items-center gap-2 lg:hidden ml-auto">
+            {onCancel && (
+              <button onClick={onCancel} className="text-slate-400 hover:text-white text-xs font-medium ml-auto flex items-center gap-1 transition-colors">
+                <span>Exit to Home</span>
+              </button>
+            )}
+            <div className={`flex items-center gap-2 lg:hidden ${onCancel ? '' : 'ml-auto'}`}>
               <div className={`w-7 h-7 rounded-lg ${isCandidate ? 'bg-teal-500' : 'bg-indigo-500'} flex items-center justify-center`}>
                 <Sparkles className="w-3.5 h-3.5 text-slate-950" />
               </div>
